@@ -1,0 +1,2198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Smart Attendance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        :root {
+  --primary: #00697B;
+  --primary-dark: #004e5c;
+  --primary-light: #e0f4f7;
+  --accent: #f0a500;
+  --danger: #e53935;
+  --success: #2e7d32;
+  --bg: #eef2f5;
+  --card: #ffffff;
+  --text: #0f1c26;
+  --muted: #7a8fa0;
+  --border: #d8e2ea;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c0ccd6; border-radius: 10px; }
+
+/* ── HEADER ── */
+.container { max-width: 1400px; margin: 0 auto; }
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 20px 28px;
+  background: #021c24;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+}
+
+.header-left h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px;
+  letter-spacing: 2px;
+  color: #fff;
+  text-shadow: none;
+}
+
+.header-left p { color: rgba(255,255,255,0.45); font-size: 13px; margin-top: 2px; }
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.07);
+  padding: 10px 18px;
+  border-radius: 40px;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.75);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.logout-btn {
+  padding: 7px 18px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.logout-btn:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,105,123,0.3); }
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  background: var(--card);
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+}
+
+.tab-btn {
+  padding: 9px 18px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 9px;
+  transition: all 0.15s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.2px;
+}
+.tab-btn:hover { background: var(--primary-light); color: var(--primary-dark); }
+.tab-btn.active { background: var(--primary); color: #fff; box-shadow: 0 2px 8px rgba(0,105,123,0.25); }
+
+/* ── TAB CONTENT ── */
+.tab-content {
+  display: none;
+  background: var(--card);
+  padding: 32px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+}
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── FORMS ── */
+.form-group { margin-bottom: 16px; }
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+input[type="text"], input[type="password"], input[type="date"],
+input[type="time"], input[type="number"], select {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #fafcfd;
+  color: var(--text);
+  transition: all 0.15s;
+  appearance: none;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0,105,123,0.1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  padding: 9px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin: 6px 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,105,123,0.25); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+.btn-secondary { background: #8b5cf6; }
+.btn-secondary:hover { background: #7c3aed; box-shadow: 0 4px 12px rgba(139,92,246,0.3); }
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff; border: none;
+  padding: 7px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer; transition: all 0.15s;
+  display: inline-flex; align-items: center;
+}
+.btn-danger:hover { background: #c62828; transform: translateY(-1px); }
+
+.btn-edit {
+  background: var(--accent);
+  color: #fff; border: none;
+  padding: 7px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer; transition: all 0.15s;
+  display: inline-flex; align-items: center;
+}
+.btn-edit:hover { background: #d4920a; transform: translateY(-1px); }
+
+.btn-small { padding: 5px 10px; font-size: 11px; border-radius: 7px; margin: 2px; }
+
+/* ── MESSAGES ── */
+.message {
+  padding: 11px 16px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  display: none;
+  margin: 12px 0;
+  align-items: center;
+  gap: 8px;
+}
+.message.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; display: flex; }
+.message.error   { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; display: flex; }
+
+/* ── TABLES ── */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); margin-top: 12px; }
+
+thead { background: #f3f8fa; }
+th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.7px; text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+td { padding: 11px 14px; border-bottom: 1px solid #f0f4f7; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tbody tr { transition: background 0.1s; }
+tbody tr:hover td { background: #f7fbfc; }
+
+/* ── STAT / KPI CARDS ── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  position: relative; overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  animation: fadeIn 0.3s ease;
+}
+.stat-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--primary), #00b4cc);
+  border-radius: 14px 14px 0 0;
+}
+.stat-number {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 38px; letter-spacing: 1px;
+  color: var(--primary-dark); line-height: 1; margin-top: 4px;
+}
+.stat-label { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); }
+
+/* ── SUBJECT / COURSE CARDS ── */
+.subject-card, .course-card {
+  background: #f7fafc;
+  padding: 18px 20px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  border-left: 4px solid var(--primary);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  transition: box-shadow 0.15s;
+}
+.subject-card:hover, .course-card:hover { box-shadow: 0 4px 16px rgba(0,105,123,0.08); }
+
+.subject-header, .course-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap; gap: 8px;
+}
+.subject-name, .course-name { font-size: 1.05em; font-weight: 700; color: var(--text); }
+.action-buttons { display: flex; gap: 6px; }
+
+.subject-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px; color: var(--muted); font-size: 12px;
+}
+
+/* ── FORM SECTIONS ── */
+form > .form-section-box,
+form[style*="background"] {
+  background: #f7fafc !important;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin-bottom: 24px;
+}
+
+/* inline style override for form wrappers */
+[style*="background: #f8f9fa"] {
+  background: #f7fafc !important;
+  border-radius: 14px !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* ── SLOT ROWS ── */
+.slot-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) auto;
+  gap: 10px; align-items: end;
+  margin-bottom: 10px;
+  background: white;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.slot-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 10px; border-radius: 8px;
+  background: white; border: 1px solid var(--border);
+  margin-bottom: 6px; font-size: 13px;
+}
+
+/* ── MODAL ── */
+.modal {
+  display: none;
+  position: fixed; z-index: 1000;
+  inset: 0;
+  background: rgba(10,20,30,0.55);
+  backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+}
+.modal.active { display: flex; }
+
+.modal-content {
+  background: white;
+  padding: 28px 30px;
+  border-radius: 18px;
+  max-width: 580px; width: 92%;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+  animation: modalIn 0.2s cubic-bezier(.34,1.3,.64,1);
+}
+@keyframes modalIn {
+  from { opacity:0; transform: scale(0.92) translateY(14px); }
+  to   { opacity:1; transform: none; }
+}
+
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: 1px; color: var(--primary-dark);
+}
+.close-modal, .close-btn {
+  background: #f3f7fa; border: none;
+  width: 30px; height: 30px; border-radius: 8px;
+  cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); transition: all 0.15s;
+}
+.close-modal:hover, .close-btn:hover { background: #fee2e2; color: var(--danger); }
+
+/* ── CAMERA ── */
+.camera-container {
+  position: relative; margin: 18px 0; text-align: center;
+  display: flex; justify-content: center;
+}
+.cam-circle-wrap {
+  position: relative;
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 0 4px var(--primary), 0 8px 32px rgba(0,105,123,0.25);
+  background: #0a1a20;
+  flex-shrink: 0;
+}
+.cam-circle-wrap video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+canvas { display: none; }
+
+/* Overlay shown inside the circle */
+.cam-overlay {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+  transition: background 0.3s;
+}
+.cam-overlay.hidden { display: none; }
+
+/* Idle state — idle ring pulse */
+.cam-overlay.idle { background: transparent; }
+.cam-ring {
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  border: 3px solid rgba(0,180,204,0.5);
+  position: absolute;
+  animation: ringPulse 2s ease-in-out infinite;
+}
+.cam-ring:nth-child(2) { animation-delay: 0.6s; opacity: 0.5; width: 200px; height: 200px; }
+@keyframes ringPulse {
+  0%,100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.07); opacity: 1; }
+}
+
+/* Scanning spinner */
+.cam-overlay.scanning { background: rgba(0,20,30,0.35); }
+.cam-spinner {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  border: 4px solid rgba(255,255,255,0.12);
+  border-top-color: #00b4cc;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Success tick */
+.cam-overlay.success { background: rgba(0,20,10,0.55); }
+.cam-tick {
+  width: 80px; height: 80px; position: relative;
+}
+.cam-tick svg { width: 80px; height: 80px; }
+.cam-tick-circle {
+  fill: none; stroke: #22c55e; stroke-width: 5;
+  stroke-dasharray: 166; stroke-dashoffset: 166;
+  animation: drawCircle 0.5s ease forwards;
+}
+.cam-tick-check {
+  fill: none; stroke: #22c55e; stroke-width: 5;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 48; stroke-dashoffset: 48;
+  animation: drawCheck 0.3s 0.4s ease forwards;
+}
+@keyframes drawCircle { to { stroke-dashoffset: 0; } }
+@keyframes drawCheck  { to { stroke-dashoffset: 0; } }
+
+/* Error X */
+.cam-overlay.error-state { background: rgba(30,0,0,0.55); }
+.cam-x {
+  width: 80px; height: 80px;
+}
+.cam-x svg { width: 80px; height: 80px; }
+.cam-x-circle {
+  fill: none; stroke: #ef4444; stroke-width: 5;
+  stroke-dasharray: 166; stroke-dashoffset: 166;
+  animation: drawCircle 0.5s ease forwards;
+}
+.cam-x-line {
+  fill: none; stroke: #ef4444; stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 40; stroke-dashoffset: 40;
+  animation: drawCheck 0.25s 0.4s ease forwards;
+}
+.cam-x-line2 {
+  fill: none; stroke: #ef4444; stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 40; stroke-dashoffset: 40;
+  animation: drawCheck 0.25s 0.5s ease forwards;
+}
+
+/* Caption text inside circle */
+.cam-caption {
+  color: #fff; font-size: 12px; font-weight: 600;
+  margin-top: 10px; text-align: center;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  max-width: 160px; line-height: 1.4;
+}
+
+/* Capture flash */
+@keyframes flashFade {
+  0% { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+.cam-flash {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: white;
+  pointer-events: none;
+  z-index: 20;
+  animation: flashFade 0.35s ease forwards;
+}
+
+/* ── NO DATA ── */
+.no-data {
+  text-align: center; padding: 40px;
+  color: var(--muted); font-size: 13px;
+  font-weight: 500;
+}
+.no-data::before { content: '📭'; display: block; font-size: 32px; margin-bottom: 10px; }
+
+/* ── LIVE DOT ANIMATION ── */
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+  display: inline-block;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
+  50%      { box-shadow: 0 0 0 7px rgba(34,197,94,0.05); }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .tab-content { padding: 18px; }
+  .form-row { grid-template-columns: 1fr; }
+  header { padding: 14px 18px; }
+  .header-left h1 { font-size: 22px; }
+}
+/* ── EDIT STUDENT PHOTO ── */
+.photo-preview-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 18px;
+}
+.photo-preview-circle {
+  width: 100px; height: 100px; border-radius: 50%;
+  object-fit: cover; border: 3px solid var(--primary);
+  background: #eef2f5; display: flex; align-items: center; justify-content: center;
+  font-size: 36px; overflow: hidden; flex-shrink: 0;
+}
+.photo-preview-circle img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.photo-source-btns { display: flex; gap: 8px; }
+.photo-source-btn {
+  padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1.5px solid var(--border); background: #f7fafc;
+  color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s;
+}
+.photo-source-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.photo-source-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.edit-cam-section { display: none; margin-top: 10px; }
+.edit-cam-section.visible { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.edit-cam-circle-wrap {
+  position: relative; width: 190px; height: 190px; border-radius: 50%; overflow: hidden;
+  box-shadow: 0 0 0 3px var(--primary), 0 4px 16px rgba(0,105,123,0.2);
+  background: #0a1a20;
+}
+.edit-cam-circle-wrap video { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+.edit-cam-overlay {
+  position: absolute; inset: 0; border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  pointer-events: none; z-index: 10;
+}
+.edit-cam-overlay.idle { background: rgba(0,0,0,0.4); }
+.edit-cam-overlay.hidden { display: none; }
+.edit-cam-overlay.scanning { background: rgba(0,20,30,0.4); }
+.edit-cam-overlay.success { background: rgba(0,20,10,0.55); }
+.edit-cam-caption { color:#fff; font-size:11px; font-weight:600; margin-top:6px; text-shadow:0 1px 3px rgba(0,0,0,0.8); text-align:center; }
+.file-chosen-badge {
+  display: none; align-items: center; gap: 6px;
+  background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;
+  padding: 7px 12px; font-size: 12px; color: #15803d; font-weight: 600; margin-top: 6px;
+}
+.file-chosen-badge.visible { display: flex; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <h1>👨‍💼 Admin Dashboard</h1>
+                <p>Smart Attendance Management System</p>
+            </div>
+            <div class="user-info">
+                <span class="live-dot"></span>
+                <span>Welcome, Admin</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('register')">Register Student</button>
+            <!--<button class="tab-btn" onclick="showTab('subjects')">Manage Subjects</button>
+            <button class="tab-btn" onclick="showTab('courses')">Courses</button>
+            <button class="tab-btn" onclick="showTab('locations')">Locations</button> -->
+            <!-- <button class="tab-btn" onclick="showTab('attendance')">Mark Attendance</button> -->
+            <button class="tab-btn" onclick="showTab('records')">View Records</button>
+            <button class="tab-btn" onclick="showTab('students')">Students List</button>
+            <button class="tab-btn" onclick="showTab('teachers')">Teachers</button>
+        </div>
+
+        <!-- Register Student Tab -->
+        <div id="register" class="tab-content active">
+            <h2 style="margin-bottom: 25px; color: #333;">Register New Student</h2>
+            <div id="register-message" class="message"></div>
+            
+            <form id="registerForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Student Name:</label>
+                        <input type="text" id="studentName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Roll Number:</label>
+                        <input type="text" id="rollNumber" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Default Password:</label>
+                        <input type="password" id="studentPassword" required>
+                    </div>
+                </div>
+                
+                <div class="camera-container">
+                    <div class="cam-circle-wrap" id="registerCamWrap">
+                        <video id="registerVideo" autoplay playsinline></video>
+                        <!-- Idle rings (shown before camera starts) -->
+                        <div class="cam-overlay idle" id="camOverlay">
+                            <div class="cam-ring"></div>
+                            <div class="cam-ring"></div>
+                            <span class="cam-caption">Tap Start Camera</span>
+                        </div>
+                    </div>
+                    <canvas id="registerCanvas"></canvas>
+                </div>
+                
+                <div style="text-align: center;">
+                    <button type="button" class="btn" onclick="startCamera('register')">Start Camera</button>
+                    <button type="button" class="btn btn-secondary" onclick="captureImage('register')">Capture Photo</button>
+                    <button type="submit" class="btn">Register Student</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Manage Subjects Tab -->
+        <div id="subjects" class="tab-content">
+            <h2 style="margin-bottom: 25px; color: #333;">Manage Subjects & Schedule</h2>
+            <div id="subjects-message" class="message"></div>
+            
+            <form id="subjectForm" style="background: #f8f9fa; padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+                <h3 style="margin-bottom: 20px; color: #667eea;">Add New Subject</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Subject Name:</label>
+                        <input type="text" id="subjectName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Subject Code:</label>
+                        <input type="text" id="subjectCode" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Day of Week:</label>
+                        <select id="dayOfWeek" required>
+                            <option value="">Select Day</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                            <option value="Sunday">Sunday</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Start Time:</label>
+                        <input type="time" id="startTime" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>End Time:</label>
+                        <input type="time" id="endTime" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Attendance Window (minutes after class ends):</label>
+                        <input type="number" id="attendanceWindow" value="15" min="0" max="60" required>
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <button type="submit" class="btn">Add Subject</button>
+                </div>
+            </form>
+
+            <h3 style="margin-bottom: 20px; color: #333;">Existing Subjects</h3>
+            <div id="subjectsList"></div>
+        </div>
+
+        <!-- Edit Subject Modal -->
+        <div id="editSubjectModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit Subject</h2>
+                    <button class="close-modal" onclick="closeModal('editSubjectModal')">&times;</button>
+                </div>
+                <form id="editSubjectForm">
+                    <input type="hidden" id="editSubjectId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Subject Name:</label>
+                            <input type="text" id="editSubjectName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Subject Code:</label>
+                            <input type="text" id="editSubjectCode" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Day of Week:</label>
+                            <select id="editDayOfWeek" required>
+                                <option value="">Select Day</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                                <option value="Sunday">Sunday</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Start Time:</label>
+                            <input type="time" id="editStartTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label>End Time:</label>
+                            <input type="time" id="editEndTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Attendance Window (minutes):</label>
+                            <input type="number" id="editAttendanceWindow" min="0" max="60" required>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button type="submit" class="btn">Update Subject</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('editSubjectModal')">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Courses Tab -->
+        <div id="courses" class="tab-content">
+            <h2 style="margin-bottom: 25px; color: #333;">Courses Overview</h2>
+            <div id="courses-message" class="message"></div>
+
+            <form id="adminCourseForm" style="background: #f8f9fa; padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+                <h3 style="margin-bottom: 20px; color: #667eea;">Add New Course</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Course Name:</label>
+                        <input type="text" id="adminCourseName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Course Code:</label>
+                        <input type="text" id="adminCourseCode" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Assign Teacher:</label>
+                        <select id="adminCourseTeacher">
+                            <option value="">— Unassigned —</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <button type="submit" class="btn">Add Course</button>
+                </div>
+            </form>
+
+            <h3 style="margin-bottom: 20px; color: #333;">All Courses</h3>
+            <div id="adminCoursesList"></div>
+        </div>
+
+        <!-- Edit Course Modal (Admin) -->
+        <div id="editAdminCourseModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal('editAdminCourseModal')">&times;</span>
+                <h3>Edit Course</h3>
+                <form id="editAdminCourseForm">
+                    <input type="hidden" id="editAdminCourseId">
+                    <div class="form-group">
+                        <label>Course Name:</label>
+                        <input type="text" id="editAdminCourseName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Course Code:</label>
+                        <input type="text" id="editAdminCourseCode" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Assign Teacher:</label>
+                        <select id="editAdminCourseTeacher">
+                            <option value="">— Unassigned —</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Locations Tab -->
+        <div id="locations" class="tab-content">
+            <h2 style="margin-bottom: 25px; color: #333;">Location & WiFi Settings</h2>
+            <div id="locations-message" class="message"></div>
+            
+            <form id="locationForm" style="background: #f8f9fa; padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+                <h3 style="margin-bottom: 20px; color: #667eea;">Add Location</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Location Name:</label>
+                        <input type="text" id="locationName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>WiFi SSID (Optional):</label>
+                        <input type="text" id="wifiSSID" placeholder="e.g., Campus_WiFi">
+                    </div>
+
+                    <div class="form-group">
+                        <label>IP Range (Optional):</label>
+                        <input type="text" id="ipRange" placeholder="e.g., 192.168.1.0/24">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Latitude (Optional):</label>
+                        <input type="text" id="latitude" placeholder="e.g., 33.6844">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Longitude (Optional):</label>
+                        <input type="text" id="longitude" placeholder="e.g., 73.0479">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Radius (meters):</label>
+                        <input type="number" id="radius" value="100" min="10">
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <button type="submit" class="btn">Add Location</button>
+                </div>
+            </form>
+
+            <h3 style="margin-bottom: 20px; color: #333;">Registered Locations</h3>
+            <div id="locationsList"></div>
+        </div>
+
+        <!-- Edit Location Modal -->
+        <div id="editLocationModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit Location</h2>
+                    <button class="close-modal" onclick="closeModal('editLocationModal')">&times;</button>
+                </div>
+                <form id="editLocationForm">
+                    <input type="hidden" id="editLocationId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Location Name:</label>
+                            <input type="text" id="editLocationName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>WiFi SSID:</label>
+                            <input type="text" id="editWifiSSID">
+                        </div>
+                        <div class="form-group">
+                            <label>IP Range:</label>
+                            <input type="text" id="editIpRange">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Latitude:</label>
+                            <input type="text" id="editLatitude">
+                        </div>
+                        <div class="form-group">
+                            <label>Longitude:</label>
+                            <input type="text" id="editLongitude">
+                        </div>
+                        <div class="form-group">
+                            <label>Radius (meters):</label>
+                            <input type="number" id="editRadius" min="10" required>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button type="submit" class="btn">Update Location</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('editLocationModal')">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Mark Attendance Tab -->
+        <div id="attendance" class="tab-content">
+            <h2 style="margin-bottom: 25px; color: #333;">Mark Attendance</h2>
+            <div id="attendance-message" class="message"></div>
+            
+            <div id="currentSubject" style="background: #e3f2fd; padding: 20px; border-radius: 12px; margin-bottom: 20px; display: none;">
+                <h3 style="color: #1976d2; margin-bottom: 10px;">📚 Current Class</h3>
+                <div style="color: #333; font-size: 1.1em;" id="subjectInfo"></div>
+            </div>
+
+            <div class="camera-container">
+                <video id="attendanceVideo" autoplay></video>
+                <canvas id="attendanceCanvas"></canvas>
+            </div>
+            
+            <div style="text-align: center;">
+                <button class="btn" onclick="startCamera('attendance')">Start Camera</button>
+                <button class="btn btn-secondary" onclick="markAttendance()">Mark Attendance</button>
+            </div>
+        </div>
+
+        <!-- View Records Tab -->
+        <div id="records" class="tab-content">
+            <h2 style="margin-bottom: 25px; color: #333;">Attendance Records</h2>
+            
+            <div class="form-row" style="max-width: 600px; margin-bottom: 20px;">
+                <div class="form-group">
+                    <label>Select Date:</label>
+                    <input type="date" id="recordDate" onchange="loadAttendance()">
+                </div>
+                <div class="form-group">
+                    <label>Filter by Subject:</label>
+                    <select id="filterSubject" onchange="loadAttendance()">
+                        <option value="">All Subjects</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="stats" id="statsContainer"></div>
+            
+            <div id="recordsTable"></div>
+        </div>
+
+        <!-- Students List Tab -->
+        <div id="students" class="tab-content">
+            <h2 style="margin-bottom: 25px; color: #333;">Registered Students</h2>
+            <div id="studentsTable"></div>
+        </div>
+                <!-- Teachers Tab -->
+        <div id="teachers" class="tab-content">
+            <h2 style="margin-bottom: 25px; color: #333;">Manage Teachers</h2>
+            <div id="teachers-message" class="message"></div>
+
+            <form id="teacherForm" style="background: #f8f9fa; padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+                <h3 style="margin-bottom: 20px; color: #667eea;">Add New Teacher</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Teacher Name:</label>
+                        <input type="text" id="teacherName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Username:</label>
+                        <input type="text" id="teacherUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password:</label>
+                        <input type="password" id="teacherPassword" required>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <button type="submit" class="btn">Add Teacher</button>
+                </div>
+            </form>
+
+            <h3 style="margin-bottom: 20px; color: #333;">Existing Teachers</h3>
+            <div id="teachersTable"></div>
+        </div>
+
+        <!-- Edit Teacher Modal -->
+        <div id="editTeacherModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit Teacher</h2>
+                    <button class="close-modal" onclick="closeModal('editTeacherModal')">&times;</button>
+                </div>
+                <form id="editTeacherForm">
+                    <input type="hidden" id="editTeacherId">
+                    <div class="form-group">
+                        <label>Teacher Name:</label>
+                        <input type="text" id="editTeacherName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Username:</label>
+                        <input type="text" id="editTeacherUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label>New Password (leave empty to keep current):</label>
+                        <input type="password" id="editTeacherPassword" placeholder="Enter new password">
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button type="submit" class="btn">Update Teacher</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('editTeacherModal')">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Student Modal -->
+        <div id="editStudentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit Student</h2>
+                    <button class="close-modal" onclick="closeModal('editStudentModal')">&times;</button>
+                </div>
+                <form id="editStudentForm">
+                    <input type="hidden" id="editStudentId">
+
+                    <!-- Photo section -->
+                    <div class="form-group">
+                        <label>Profile Photo</label>
+                        <div class="photo-preview-wrap">
+                            <div class="photo-preview-circle" id="editPhotoPreview">👤</div>
+                            <div class="photo-source-btns">
+                                <button type="button" class="photo-source-btn" onclick="toggleEditPhotoSource('camera')">📷 Camera</button>
+                                <button type="button" class="photo-source-btn" onclick="toggleEditPhotoSource('file')">📁 Upload File</button>
+                            </div>
+                            <!-- Camera mode -->
+                            <div class="edit-cam-section" id="editCamSection">
+                                <div class="edit-cam-circle-wrap" id="editCamWrap">
+                                    <video id="editStudentVideo" autoplay playsinline></video>
+                                    <div class="edit-cam-overlay idle" id="editCamOverlay">
+                                        <div class="cam-spinner" style="width:60px;height:60px;"></div>
+                                        <span class="edit-cam-caption">Starting...</span>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn" style="margin-top:4px;" onclick="editCapturePhoto()">📸 Capture</button>
+                            </div>
+                            <!-- File upload mode -->
+                            <input type="file" id="editPhotoFile" accept="image/*" style="display:none" onchange="handleEditFileUpload(event)">
+                            <div class="file-chosen-badge" id="fileChosenBadge">
+                                <span>✅</span><span id="fileChosenName">photo.jpg</span>
+                            </div>
+                            <canvas id="editStudentCanvas" style="display:none;"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Student Name:</label>
+                        <input type="text" id="editStudentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Roll Number:</label>
+                        <input type="text" id="editRollNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label>New Password (leave empty to keep current):</label>
+                        <input type="password" id="editStudentPassword" placeholder="Enter new password">
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button type="submit" class="btn">Update Student</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('editStudentModal')">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStream = null;
+        let capturedImage = null;
+
+        document.getElementById('recordDate').valueAsDate = new Date();
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            stopCamera();
+            
+            if (tabName === 'subjects') loadSubjects();
+            if (tabName === 'courses') loadAdminCourses();
+            if (tabName === 'locations') loadLocations();
+            if (tabName === 'attendance') checkCurrentSubject();
+            if (tabName === 'records') {
+                loadStats();
+                loadSubjectsForFilter();
+                loadAttendance();
+            }
+            if (tabName === 'students') loadStudents();
+            if (tabName === 'teachers') loadTeachers();
+        }
+
+        async function checkCurrentSubject() {
+            try {
+                const response = await fetch('/get_current_subject');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const subject = result.subject;
+                    document.getElementById('currentSubject').style.display = 'block';
+                    document.getElementById('subjectInfo').innerHTML = `
+                        <strong>${subject.name} (${subject.code})</strong><br>
+                        Time: ${subject.start_time} - ${subject.end_time}<br>
+                        Attendance window closes: ${subject.attendance_window} minutes after class ends
+                    `;
+                } else {
+                    document.getElementById('currentSubject').style.display = 'none';
+                }
+            } catch (err) {
+                console.error('Error checking subject:', err);
+            }
+        }
+
+        // Subject Management
+        document.getElementById('subjectForm').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const data = {
+                name: document.getElementById('subjectName').value,
+                code: document.getElementById('subjectCode').value,
+                day_of_week: document.getElementById('dayOfWeek').value,
+                start_time: document.getElementById('startTime').value,
+                end_time: document.getElementById('endTime').value,
+                attendance_window: parseInt(document.getElementById('attendanceWindow').value)
+            };
+            
+            try {
+                const response = await fetch('/subjects/add', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('subjects-message', result.message, 'success');
+                    document.getElementById('subjectForm').reset();
+                    loadSubjects();
+                } else {
+                    showMessage('subjects-message', result.message, 'error');
+                }
+            } catch (err) {
+                showMessage('subjects-message', 'Error: ' + err.message, 'error');
+            }
+        };
+
+        document.getElementById('editSubjectForm').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const subjectId = document.getElementById('editSubjectId').value;
+            const data = {
+                name: document.getElementById('editSubjectName').value,
+                code: document.getElementById('editSubjectCode').value,
+                day_of_week: document.getElementById('editDayOfWeek').value,
+                start_time: document.getElementById('editStartTime').value,
+                end_time: document.getElementById('editEndTime').value,
+                attendance_window: parseInt(document.getElementById('editAttendanceWindow').value)
+            };
+            
+            try {
+                const response = await fetch(`/subjects/update/${subjectId}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('subjects-message', result.message, 'success');
+                    closeModal('editSubjectModal');
+                    loadSubjects();
+                } else {
+                    showMessage('subjects-message', result.message, 'error');
+                }
+            } catch (err) {
+                showMessage('subjects-message', 'Error: ' + err.message, 'error');
+            }
+        };
+
+        function editSubject(id, name, code, dayOfWeek, startTime, endTime, window) {
+            document.getElementById('editSubjectId').value = id;
+            document.getElementById('editSubjectName').value = name;
+            document.getElementById('editSubjectCode').value = code;
+            document.getElementById('editDayOfWeek').value = dayOfWeek;
+            document.getElementById('editStartTime').value = startTime;
+            document.getElementById('editEndTime').value = endTime;
+            document.getElementById('editAttendanceWindow').value = window;
+            openModal('editSubjectModal');
+        }
+
+        async function loadSubjects() {
+            try {
+                const response = await fetch('/subjects/list');
+                const subjects = await response.json();
+                
+                if (subjects.length === 0) {
+                    document.getElementById('subjectsList').innerHTML = 
+                        '<div class="no-data">No subjects added yet</div>';
+                    return;
+                }
+                
+                let html = '';
+                subjects.forEach(s => {
+                    html += `
+                        <div class="subject-card">
+                            <div class="subject-header">
+                                <div class="subject-name">${s.name} (${s.code})</div>
+                                <div class="action-buttons">
+                                    <button class="btn btn-edit" onclick="editSubject(${s.id}, '${s.name}', '${s.code}', '${s.day_of_week}', '${s.start_time}', '${s.end_time}', ${s.attendance_window})">Edit</button>
+                                    <button class="btn btn-danger" onclick="deleteSubject(${s.id})">Delete</button>
+                                </div>
+                            </div>
+                            <div class="subject-details">
+                                <div><strong>Day:</strong> ${s.day_of_week}</div>
+                                <div><strong>Time:</strong> ${s.start_time} - ${s.end_time}</div>
+                                <div><strong>Attendance Window:</strong> ${s.attendance_window} min</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('subjectsList').innerHTML = html;
+            } catch (err) {
+                document.getElementById('subjectsList').innerHTML = 
+                    '<div class="no-data">Error loading subjects</div>';
+            }
+        }
+
+        async function deleteSubject(id) {
+            if (!confirm('Are you sure you want to delete this subject? All related attendance records will remain.')) return;
+            
+            try {
+                const response = await fetch(`/subjects/delete/${id}`, {method: 'DELETE'});
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('subjects-message', result.message, 'success');
+                    loadSubjects();
+                } else {
+                    showMessage('subjects-message', result.message, 'error');
+                }
+            } catch (err) {
+                showMessage('subjects-message', 'Error: ' + err.message, 'error');
+            }
+        }
+
+        // Location Management
+        document.getElementById('locationForm').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const data = {
+                name: document.getElementById('locationName').value,
+                wifi_ssid: document.getElementById('wifiSSID').value || null,
+                ip_range: document.getElementById('ipRange').value || null,
+                latitude: parseFloat(document.getElementById('latitude').value) || null,
+                longitude: parseFloat(document.getElementById('longitude').value) || null,
+                radius: parseInt(document.getElementById('radius').value)
+            };
+            
+            try {
+                const response = await fetch('/locations/add', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('locations-message', result.message, 'success');
+                    document.getElementById('locationForm').reset();
+                    loadLocations();
+                } else {
+                    showMessage('locations-message', result.message, 'error');
+                }
+            } catch (err) {
+                showMessage('locations-message', 'Error: ' + err.message, 'error');
+            }
+        };
+
+        document.getElementById('editLocationForm').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const locationId = document.getElementById('editLocationId').value;
+            const data = {
+                name: document.getElementById('editLocationName').value,
+                wifi_ssid: document.getElementById('editWifiSSID').value || null,
+                ip_range: document.getElementById('editIpRange').value || null,
+                latitude: parseFloat(document.getElementById('editLatitude').value) || null,
+                longitude: parseFloat(document.getElementById('editLongitude').value) || null,
+                radius: parseInt(document.getElementById('editRadius').value)
+            };
+            
+            try {
+                const response = await fetch(`/locations/update/${locationId}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('locations-message', result.message, 'success');
+                    closeModal('editLocationModal');
+                    loadLocations();
+                } else {
+                    showMessage('locations-message', result.message, 'error');
+                }
+            } catch (err) {
+                showMessage('locations-message', 'Error: ' + err.message, 'error');
+            }
+        };
+
+        function editLocation(id, name, ssid, ipRange, lat, lng, radius) {
+            document.getElementById('editLocationId').value = id;
+            document.getElementById('editLocationName').value = name;
+            document.getElementById('editWifiSSID').value = ssid || '';
+            document.getElementById('editIpRange').value = ipRange || '';
+            document.getElementById('editLatitude').value = lat || '';
+            document.getElementById('editLongitude').value = lng || '';
+            document.getElementById('editRadius').value = radius;
+            openModal('editLocationModal');
+        }
+
+        async function loadLocations() {
+            try {
+                const response = await fetch('/locations/list');
+                const locations = await response.json();
+                
+                if (locations.length === 0) {
+                    document.getElementById('locationsList').innerHTML = 
+                        '<div class="no-data">No locations added yet</div>';
+                    return;
+                }
+                
+                let tableHtml = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>WiFi SSID</th>
+                                <th>IP Range</th>
+                                <th>Coordinates</th>
+                                <th>Radius</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                locations.forEach(l => {
+                    const coords = l.latitude && l.longitude ? 
+                        `${l.latitude}, ${l.longitude}` : 'N/A';
+                    tableHtml += `
+                        <tr>
+                            <td>${l.name}</td>
+                            <td>${l.wifi_ssid || 'N/A'}</td>
+                            <td>${l.ip_range || 'N/A'}</td>
+                            <td>${coords}</td>
+                            <td>${l.radius}m</td>
+                            <td>
+                                <button class="btn btn-edit" style="padding: 6px 12px; margin: 2px;" onclick="editLocation(${l.id}, '${l.name}', '${l.wifi_ssid || ''}', '${l.ip_range || ''}', ${l.latitude || 'null'}, ${l.longitude || 'null'}, ${l.radius})">Edit</button>
+                                <button class="btn btn-danger" style="padding: 6px 12px; margin: 2px;" onclick="deleteLocation(${l.id})">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tableHtml += '</tbody></table>';
+                document.getElementById('locationsList').innerHTML = tableHtml;
+            } catch (err) {
+                document.getElementById('locationsList').innerHTML = 
+                    '<div class="no-data">Error loading locations</div>';
+            }
+        }
+
+        async function deleteLocation(id) {
+            if (!confirm('Are you sure you want to delete this location?')) return;
+            
+            try {
+                const response = await fetch(`/locations/delete/${id}`, {method: 'DELETE'});
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('locations-message', result.message, 'success');
+                    loadLocations();
+                } else {
+                    showMessage('locations-message', result.message, 'error');
+                }
+            } catch (err) {
+                showMessage('locations-message', 'Error: ' + err.message, 'error');
+            }
+        }
+
+        // ── Camera overlay helpers ──────────────────────────────────
+        function setCamOverlay(state, caption) {
+            const ov = document.getElementById('camOverlay');
+            if (!ov) return;
+            // reset classes
+            ov.className = 'cam-overlay';
+            ov.innerHTML = '';
+            if (state === 'hidden') { ov.classList.add('hidden'); return; }
+            if (state === 'idle') {
+                ov.classList.add('idle');
+                ov.innerHTML = `<div class="cam-ring"></div><div class="cam-ring"></div><span class="cam-caption">${caption||'Tap Start Camera'}</span>`;
+            } else if (state === 'scanning') {
+                ov.classList.add('scanning');
+                ov.innerHTML = `<div class="cam-spinner"></div><span class="cam-caption">${caption||'Starting...'}</span>`;
+            } else if (state === 'capturing') {
+                ov.classList.add('scanning');
+                ov.innerHTML = `<div class="cam-spinner"></div><span class="cam-caption">${caption||'Capturing...'}</span>`;
+                // flash
+                const wrap = document.getElementById('registerCamWrap');
+                if (wrap) {
+                    const flash = document.createElement('div');
+                    flash.className = 'cam-flash';
+                    wrap.appendChild(flash);
+                    setTimeout(() => flash.remove(), 400);
+                }
+            } else if (state === 'success') {
+                ov.classList.add('success');
+                ov.innerHTML = `
+                    <div class="cam-tick">
+                        <svg viewBox="0 0 52 52">
+                            <circle class="cam-tick-circle" cx="26" cy="26" r="25"/>
+                            <polyline class="cam-tick-check" points="14,27 22,35 38,17"/>
+                        </svg>
+                    </div>
+                    <span class="cam-caption">${caption||'Done!'}</span>`;
+            } else if (state === 'error') {
+                ov.classList.add('error-state');
+                ov.innerHTML = `
+                    <div class="cam-x">
+                        <svg viewBox="0 0 52 52">
+                            <circle class="cam-x-circle" cx="26" cy="26" r="25"/>
+                            <line class="cam-x-line"  x1="16" y1="16" x2="36" y2="36"/>
+                            <line class="cam-x-line2" x1="36" y1="16" x2="16" y2="36"/>
+                        </svg>
+                    </div>
+                    <span class="cam-caption">${caption||'Error'}</span>`;
+            }
+        }
+
+        async function startCamera(type) {
+            try {
+                stopCamera();
+                if (type === 'register') setCamOverlay('scanning', 'Starting camera...');
+                const video = document.getElementById(`${type}Video`);
+                currentStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 640, height: 480 } 
+                });
+                video.srcObject = currentStream;
+                if (type === 'register') {
+                    await new Promise(r => video.onloadedmetadata = r);
+                    setCamOverlay('hidden');
+                }
+            } catch (err) {
+                if (type === 'register') setCamOverlay('error', 'No camera access');
+                else showMessage(`${type}-message`, 'Error accessing camera: ' + err.message, 'error');
+            }
+        }
+
+        function stopCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+            setCamOverlay('idle', 'Tap Start Camera');
+        }
+
+        function captureImage(type) {
+            const video = document.getElementById(`${type}Video`);
+            const canvas = document.getElementById(`${type}Canvas`);
+            const context = canvas.getContext('2d');
+            if (!video.videoWidth) {
+                if (type === 'register') setCamOverlay('error', 'Start camera first');
+                else showMessage(`${type}-message`, 'Start camera first', 'error');
+                return;
+            }
+            if (type === 'register') setCamOverlay('capturing', 'Capturing...');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0);
+            capturedImage = canvas.toDataURL('image/jpeg');
+            if (type === 'register') {
+                setTimeout(() => setCamOverlay('success', 'Photo captured!'), 200);
+                setTimeout(() => setCamOverlay('hidden'), 2200);
+            } else {
+                showMessage(`${type}-message`, 'Photo captured successfully!', 'success');
+            }
+        }
+
+        document.getElementById('registerForm').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            if (!capturedImage) {
+                showMessage('register-message', 'Please capture a photo first', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('studentName').value);
+            formData.append('roll_number', document.getElementById('rollNumber').value);
+            formData.append('password', document.getElementById('studentPassword').value);
+            formData.append('image', capturedImage);
+            
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    setCamOverlay('success', 'Registered!');
+                    setTimeout(() => { setCamOverlay('idle', 'Tap Start Camera'); }, 2500);
+                    showMessage('register-message', result.message, 'success');
+                    document.getElementById('registerForm').reset();
+                    capturedImage = null;
+                    stopCamera();
+                } else {
+                    setCamOverlay('error', result.message || 'Registration failed');
+                    setTimeout(() => setCamOverlay('hidden'), 2500);
+                    showMessage('register-message', result.message, 'error');
+                }
+            } catch (err) {
+                showMessage('register-message', 'Error: ' + err.message, 'error');
+            }
+        };
+
+        async function markAttendance() {
+            const video = document.getElementById('attendanceVideo');
+            const canvas = document.getElementById('attendanceCanvas');
+            const context = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0);
+            
+            const imageData = canvas.toDataURL('image/jpeg');
+            const formData = new FormData();
+            formData.append('image', imageData);
+            
+            try {
+                const response = await fetch('/mark_attendance', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('attendance-message', result.message, 'success');
+                } else {
+                    showMessage('attendance-message', result.message, 'error');
+                }
+            } catch (err) {
+                showMessage('attendance-message', 'Error: ' + err.message, 'error');
+            }
+        }
+
+        async function loadSubjectsForFilter() {
+            try {
+                const response = await fetch('/subjects/list');
+                const subjects = await response.json();
+                
+                let options = '<option value="">All Subjects</option>';
+                subjects.forEach(s => {
+                    options += `<option value="${s.id}">${s.name} (${s.code})</option>`;
+                });
+                
+                document.getElementById('filterSubject').innerHTML = options;
+            } catch (err) {
+                console.error('Error loading subjects:', err);
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/get_stats');
+                const stats = await response.json();
+                
+                const statsHtml = `
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.total_students}</div>
+                        <div class="stat-label">Total Students</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.today_present}</div>
+                        <div class="stat-label">Present Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.total_subjects}</div>
+                        <div class="stat-label">Total Subjects</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.month_attendance}</div>
+                        <div class="stat-label">This Month</div>
+                    </div>
+                `;
+                document.getElementById('statsContainer').innerHTML = statsHtml;
+            } catch (err) {
+                console.error('Error loading stats:', err);
+            }
+        }
+
+        async function loadAttendance() {
+            const date = document.getElementById('recordDate').value;
+            const subjectId = document.getElementById('filterSubject').value;
+            
+            let url = `/get_attendance?date=${date}`;
+            if (subjectId) url += `&subject_id=${subjectId}`;
+            
+            try {
+                const response = await fetch(url);
+                const records = await response.json();
+                
+                if (records.length === 0) {
+                    document.getElementById('recordsTable').innerHTML = 
+                        '<div class="no-data">No attendance records for this date</div>';
+                    return;
+                }
+                
+                let tableHtml = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Roll Number</th>
+                                <th>Subject</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                records.forEach(record => {
+                    const time = new Date(record.timestamp).toLocaleTimeString();
+                    tableHtml += `
+                        <tr>
+                            <td>${record.name}</td>
+                            <td>${record.roll_number}</td>
+                            <td>${record.subject_name} (${record.subject_code})</td>
+                            <td>${time}</td>
+                            <td>${record.status}</td>
+                        </tr>
+                    `;
+                });
+                
+                tableHtml += '</tbody></table>';
+                document.getElementById('recordsTable').innerHTML = tableHtml;
+            } catch (err) {
+                document.getElementById('recordsTable').innerHTML = 
+                    '<div class="no-data">Error loading records</div>';
+            }
+        }
+
+        async function loadStudents() {
+            try {
+                const response = await fetch('/get_students');
+                const students = await response.json();
+                
+                if (students.length === 0) {
+                    document.getElementById('studentsTable').innerHTML = 
+                        '<div class="no-data">No students registered yet</div>';
+                    return;
+                }
+                
+                let tableHtml = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Roll Number</th>
+                                <th>Registered Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                students.forEach(student => {
+                    const date = new Date(student.registered_date).toLocaleDateString();
+                    const thumb = student.photo_path
+                        ? `<img src="/${student.photo_path}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:8px;">`
+                        : `<span style="display:inline-block;width:36px;height:36px;border-radius:50%;background:#e0e0e0;vertical-align:middle;margin-right:8px;text-align:center;line-height:36px;font-size:18px;">👤</span>`;
+                    tableHtml += `
+                        <tr>
+                            <td>${thumb}${student.name}</td>
+                            <td>${student.roll_number}</td>
+                            <td>${date}</td>
+                            <td>
+                                <button class="btn btn-edit" style="padding: 6px 12px; margin: 2px;" onclick="editStudent(${student.id}, '${student.name}', '${student.roll_number}', '${student.photo_path || ''}')">Edit</button>
+                                <button class="btn btn-danger" style="padding: 6px 12px; margin: 2px;" onclick="deleteStudent(${student.id}, '${student.name}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tableHtml += '</tbody></table>';
+                document.getElementById('studentsTable').innerHTML = tableHtml;
+            } catch (err) {
+                document.getElementById('studentsTable').innerHTML = 
+                    '<div class="no-data">Error loading students</div>';
+            }
+        }
+
+        document.getElementById('editStudentForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const studentId = document.getElementById('editStudentId').value;
+
+            try {
+                // Step 1: update text fields via existing endpoint
+                const data = {
+                    name: document.getElementById('editStudentName').value,
+                    roll_number: document.getElementById('editRollNumber').value,
+                    password: document.getElementById('editStudentPassword').value || null
+                };
+                const response = await fetch(`/students/update/${studentId}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (!result.success) { alert('Error: ' + result.message); return; }
+
+                // Step 2: if new photo selected, upload it separately
+                if (editCapturedImage) {
+                    const fd = new FormData();
+                    fd.append('image', editCapturedImage);
+                    const photoRes = await fetch(`/students/update_photo/${studentId}`, {
+                        method: 'POST',
+                        body: fd
+                    });
+                    const photoResult = await photoRes.json();
+                    if (!photoResult.success) {
+                        alert('Info updated but photo failed: ' + photoResult.message);
+                        closeModal('editStudentModal');
+                        stopEditCam();
+                        loadStudents();
+                        return;
+                    }
+                }
+
+                alert(result.message);
+                editCapturedImage = null;
+                stopEditCam();
+                closeModal('editStudentModal');
+                loadStudents();
+
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        };
+
+        let editCamStream = null;
+        let editCapturedImage = null;
+        let editPhotoMode = null; // 'camera' | 'file'
+
+        function editStudent(id, name, rollNumber, photoPath) {
+            document.getElementById('editStudentId').value = id;
+            document.getElementById('editStudentName').value = name;
+            document.getElementById('editRollNumber').value = rollNumber;
+            document.getElementById('editStudentPassword').value = '';
+            editCapturedImage = null;
+            editPhotoMode = null;
+
+            // Reset photo UI
+            const preview = document.getElementById('editPhotoPreview');
+            if (photoPath) {
+                preview.innerHTML = `<img src="/${photoPath}" alt="photo">`;
+            } else {
+                preview.innerHTML = '👤';
+            }
+            document.getElementById('editCamSection').classList.remove('visible');
+            document.getElementById('editPhotoFile').value = '';
+            document.getElementById('fileChosenBadge').classList.remove('visible');
+            document.querySelectorAll('.photo-source-btn').forEach(b => b.classList.remove('active'));
+            stopEditCam();
+            openModal('editStudentModal');
+        }
+
+        function toggleEditPhotoSource(mode) {
+            document.querySelectorAll('.photo-source-btn').forEach(b => b.classList.remove('active'));
+            const camSection = document.getElementById('editCamSection');
+
+            if (editPhotoMode === mode) {
+                // toggle off
+                editPhotoMode = null;
+                camSection.classList.remove('visible');
+                stopEditCam();
+                return;
+            }
+            editPhotoMode = mode;
+            event.target.classList.add('active');
+
+            if (mode === 'camera') {
+                document.getElementById('fileChosenBadge').classList.remove('visible');
+                camSection.classList.add('visible');
+                startEditCam();
+            } else {
+                camSection.classList.remove('visible');
+                stopEditCam();
+                document.getElementById('editPhotoFile').click();
+            }
+        }
+
+        async function startEditCam() {
+            stopEditCam();
+            const ov = document.getElementById('editCamOverlay');
+            ov.className = 'edit-cam-overlay scanning';
+            ov.innerHTML = `<div class="cam-spinner" style="width:60px;height:60px;"></div><span class="edit-cam-caption">Starting...</span>`;
+            try {
+                editCamStream = await navigator.mediaDevices.getUserMedia({ video: { width: 480, height: 480 } });
+                const video = document.getElementById('editStudentVideo');
+                video.srcObject = editCamStream;
+                await new Promise(r => video.onloadedmetadata = r);
+                ov.className = 'edit-cam-overlay hidden';
+            } catch (err) {
+                ov.className = 'edit-cam-overlay idle';
+                ov.innerHTML = `<span class="edit-cam-caption">❌ No camera</span>`;
+            }
+        }
+
+        function stopEditCam() {
+            if (editCamStream) {
+                editCamStream.getTracks().forEach(t => t.stop());
+                editCamStream = null;
+            }
+            const video = document.getElementById('editStudentVideo');
+            if (video) video.srcObject = null;
+        }
+
+        function editCapturePhoto() {
+            const video = document.getElementById('editStudentVideo');
+            const canvas = document.getElementById('editStudentCanvas');
+            if (!video.videoWidth) return;
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            editCapturedImage = canvas.toDataURL('image/jpeg');
+
+            // Show tick in overlay
+            const ov = document.getElementById('editCamOverlay');
+            ov.className = 'edit-cam-overlay success';
+            ov.innerHTML = `
+                <svg width="52" height="52" viewBox="0 0 52 52">
+                    <circle class="cam-tick-circle" cx="26" cy="26" r="25" fill="none" stroke="#22c55e" stroke-width="4" stroke-dasharray="166" stroke-dashoffset="166" style="animation:drawCircle 0.5s ease forwards"/>
+                    <polyline class="cam-tick-check" points="14,27 22,35 38,17" fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="48" stroke-dashoffset="48" style="animation:drawCheck 0.3s 0.4s ease forwards"/>
+                </svg>
+                <span class="edit-cam-caption">Captured!</span>`;
+
+            // Update preview circle
+            document.getElementById('editPhotoPreview').innerHTML = `<img src="${editCapturedImage}" alt="preview">`;
+            setTimeout(() => { ov.className = 'edit-cam-overlay hidden'; }, 1800);
+        }
+
+        function handleEditFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                editCapturedImage = ev.target.result;
+                document.getElementById('editPhotoPreview').innerHTML = `<img src="${editCapturedImage}" alt="preview">`;
+                document.getElementById('fileChosenName').textContent = file.name;
+                document.getElementById('fileChosenBadge').classList.add('visible');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function deleteStudent(id, name) {
+            if (!confirm(`Are you sure you want to delete ${name}? This will also delete all their attendance records.`)) return;
+            
+            try {
+                const response = await fetch(`/students/delete/${id}`, {method: 'DELETE'});
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(result.message);
+                    loadStudents();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+                document.getElementById('teacherForm').onsubmit = async (e) => {
+            e.preventDefault();
+
+            const data = {
+                name: document.getElementById('teacherName').value,
+                username: document.getElementById('teacherUsername').value,
+                password: document.getElementById('teacherPassword').value
+            };
+
+            try {
+                const response = await fetch('/teachers/add', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showMessage('teachers-message', result.message, 'success');
+                    document.getElementById('teacherForm').reset();
+                    loadTeachers();
+                } else {
+                    showMessage('teachers-message', result.message, 'error');
+                }
+            } catch (err) {
+                showMessage('teachers-message', 'Error: ' + err.message, 'error');
+            }
+        };
+
+        async function loadTeachers() {
+            try {
+                const response = await fetch('/teachers/list');
+                const teachers = await response.json();
+
+                if (teachers.length === 0) {
+                    document.getElementById('teachersTable').innerHTML =
+                        '<div class="no-data">No teachers added yet</div>';
+                    return;
+                }
+
+                let tableHtml = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Registered Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                teachers.forEach(teacher => {
+                    const date = new Date(teacher.registered_date).toLocaleDateString();
+                    tableHtml += `
+                        <tr>
+                            <td>${teacher.name}</td>
+                            <td>${teacher.username}</td>
+                            <td>${date}</td>
+                            <td>
+                                <button class="btn btn-edit" style="padding: 6px 12px; margin: 2px;" onclick="editTeacher(${teacher.id}, '${teacher.name}', '${teacher.username}')">Edit</button>
+                                <button class="btn btn-danger" style="padding: 6px 12px; margin: 2px;" onclick="deleteTeacher(${teacher.id}, '${teacher.name}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tableHtml += '</tbody></table>';
+                document.getElementById('teachersTable').innerHTML = tableHtml;
+            } catch (err) {
+                document.getElementById('teachersTable').innerHTML =
+                    '<div class="no-data">Error loading teachers</div>';
+            }
+        }
+
+        document.getElementById('editTeacherForm').onsubmit = async (e) => {
+            e.preventDefault();
+
+            const teacherId = document.getElementById('editTeacherId').value;
+            const data = {
+                name: document.getElementById('editTeacherName').value,
+                username: document.getElementById('editTeacherUsername').value,
+                password: document.getElementById('editTeacherPassword').value || null
+            };
+
+            try {
+                const response = await fetch(`/teachers/update/${teacherId}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    closeModal('editTeacherModal');
+                    loadTeachers();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        };
+
+        function editTeacher(id, name, username) {
+            document.getElementById('editTeacherId').value = id;
+            document.getElementById('editTeacherName').value = name;
+            document.getElementById('editTeacherUsername').value = username;
+            document.getElementById('editTeacherPassword').value = '';
+            openModal('editTeacherModal');
+        }
+
+        async function deleteTeacher(id, name) {
+            if (!confirm(`Are you sure you want to delete ${name}? Their courses will be unassigned.`)) return;
+
+            try {
+                const response = await fetch(`/teachers/delete/${id}`, {method: 'DELETE'});
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    loadTeachers();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+        function showMessage(elementId, message, type) {
+            const msgEl = document.getElementById(elementId);
+            msgEl.textContent = message;
+            msgEl.className = `message ${type}`;
+            msgEl.style.display = 'block';
+            
+            setTimeout(() => {
+                msgEl.style.display = 'none';
+            }, 5000);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '/logout';
+            }
+        }
+
+        loadStats();
+        loadAttendance();
+    // ── Admin: Courses Tab ──────────────────────────────────────────
+        async function loadAdminCourses() {
+            try {
+                // Load teachers for dropdowns
+                const tRes = await fetch('/teachers/list');
+                const teachers = await tRes.json();
+                const teacherOptions = teachers.map(t =>
+                    `<option value="${t.id}">${t.name} (${t.username})</option>`).join('');
+
+                ['adminCourseTeacher', 'editAdminCourseTeacher'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerHTML = '<option value="">— Unassigned —</option>' + teacherOptions;
+                });
+
+                const res = await fetch('/admin/courses/list');
+                const courses = await res.json();
+                if (courses.length === 0) {
+                    document.getElementById('adminCoursesList').innerHTML =
+                        '<div class="no-data">No courses yet</div>';
+                    return;
+                }
+                let html = '';
+                courses.forEach(c => {
+                    html += `
+                        <div class="subject-card">
+                            <div class="subject-header">
+                                <div class="subject-name">${c.name} <span style="color:#667eea">(${c.code})</span></div>
+                                <div class="action-buttons">
+                                    <button class="btn btn-edit" onclick="editAdminCourse(${c.id},'${c.name.replace(/'/g,"\\'")}','${c.code}')">Edit</button>
+                                    <button class="btn btn-danger" onclick="deleteAdminCourse(${c.id})">Delete</button>
+                                </div>
+                            </div>
+                            <div class="subject-details">
+                                <div><strong>Teacher:</strong> ${c.teacher_name || '<em>Unassigned</em>'}</div>
+                                <div><strong>Created:</strong> ${c.created_date ? c.created_date.split('T')[0] : ''}</div>
+                            </div>
+                        </div>`;
+                });
+                document.getElementById('adminCoursesList').innerHTML = html;
+            } catch (err) {
+                showMessage('courses-message', 'Error loading courses: ' + err.message, 'error');
+            }
+        }
+
+        function editAdminCourse(id, name, code) {
+            document.getElementById('editAdminCourseId').value = id;
+            document.getElementById('editAdminCourseName').value = name;
+            document.getElementById('editAdminCourseCode').value = code;
+            openModal('editAdminCourseModal');
+        }
+
+        async function deleteAdminCourse(id) {
+            if (!confirm('Delete this course and all its class slots?')) return;
+            try {
+                const res = await fetch(`/admin/courses/delete/${id}`, {method: 'DELETE'});
+                const result = await res.json();
+                if (result.success) {
+                    showMessage('courses-message', result.message, 'success');
+                    loadAdminCourses();
+                } else {
+                    showMessage('courses-message', result.message, 'error');
+                }
+            } catch (err) {
+                showMessage('courses-message', 'Error: ' + err.message, 'error');
+            }
+        }
+
+        document.getElementById('adminCourseForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('adminCourseName').value,
+                code: document.getElementById('adminCourseCode').value,
+                teacher_id: document.getElementById('adminCourseTeacher').value || null
+            };
+            try {
+                const res = await fetch('/admin/courses/add', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showMessage('courses-message', result.message, 'success');
+                    document.getElementById('adminCourseForm').reset();
+                    loadAdminCourses();
+                } else {
+                    showMessage('courses-message', result.message, 'error');
+                }
+            } catch (err) {
+                showMessage('courses-message', 'Error: ' + err.message, 'error');
+            }
+        };
+
+        document.getElementById('editAdminCourseForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editAdminCourseId').value;
+            const data = {
+                name: document.getElementById('editAdminCourseName').value,
+                code: document.getElementById('editAdminCourseCode').value,
+                teacher_id: document.getElementById('editAdminCourseTeacher').value || null
+            };
+            try {
+                const res = await fetch(`/admin/courses/update/${id}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showMessage('courses-message', result.message, 'success');
+                    closeModal('editAdminCourseModal');
+                    loadAdminCourses();
+                } else {
+                    showMessage('courses-message', result.message, 'error');
+                }
+            } catch (err) {
+                showMessage('courses-message', 'Error: ' + err.message, 'error');
+            }
+        };
+    </script>
+</body>
+</html>

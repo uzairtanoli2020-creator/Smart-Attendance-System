@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - Smart Attendance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        :root {
+  --primary: #00697B;
+  --primary-dark: #004e5c;
+  --primary-light: #e0f4f7;
+  --accent: #f0a500;
+  --danger: #e53935;
+  --success: #2e7d32;
+  --bg: #eef2f5;
+  --card: #ffffff;
+  --text: #0f1c26;
+  --muted: #7a8fa0;
+  --border: #d8e2ea;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c0ccd6; border-radius: 10px; }
+
+/* ── HEADER ── */
+.container { max-width: 1400px; margin: 0 auto; }
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 20px 28px;
+  background: #021c24;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+}
+
+.header-left h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px;
+  letter-spacing: 2px;
+  color: #fff;
+  text-shadow: none;
+}
+
+.header-left p { color: rgba(255,255,255,0.45); font-size: 13px; margin-top: 2px; }
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.07);
+  padding: 10px 18px;
+  border-radius: 40px;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.75);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.logout-btn {
+  padding: 7px 18px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.logout-btn:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,105,123,0.3); }
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  background: var(--card);
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+}
+
+.tab-btn {
+  padding: 9px 18px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 9px;
+  transition: all 0.15s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.2px;
+}
+.tab-btn:hover { background: var(--primary-light); color: var(--primary-dark); }
+.tab-btn.active { background: var(--primary); color: #fff; box-shadow: 0 2px 8px rgba(0,105,123,0.25); }
+
+/* ── TAB CONTENT ── */
+.tab-content {
+  display: none;
+  background: var(--card);
+  padding: 32px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+}
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── FORMS ── */
+.form-group { margin-bottom: 16px; }
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+input[type="text"], input[type="password"], input[type="date"],
+input[type="time"], input[type="number"], select {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #fafcfd;
+  color: var(--text);
+  transition: all 0.15s;
+  appearance: none;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0,105,123,0.1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  padding: 9px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin: 6px 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,105,123,0.25); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+.btn-secondary { background: #8b5cf6; }
+.btn-secondary:hover { background: #7c3aed; box-shadow: 0 4px 12px rgba(139,92,246,0.3); }
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff; border: none;
+  padding: 7px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer; transition: all 0.15s;
+  display: inline-flex; align-items: center;
+}
+.btn-danger:hover { background: #c62828; transform: translateY(-1px); }
+
+.btn-edit {
+  background: var(--accent);
+  color: #fff; border: none;
+  padding: 7px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer; transition: all 0.15s;
+  display: inline-flex; align-items: center;
+}
+.btn-edit:hover { background: #d4920a; transform: translateY(-1px); }
+
+.btn-small { padding: 5px 10px; font-size: 11px; border-radius: 7px; margin: 2px; }
+
+/* ── MESSAGES ── */
+.message {
+  padding: 11px 16px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  display: none;
+  margin: 12px 0;
+  align-items: center;
+  gap: 8px;
+}
+.message.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; display: flex; }
+.message.error   { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; display: flex; }
+
+/* ── TABLES ── */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); margin-top: 12px; }
+
+thead { background: #f3f8fa; }
+th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.7px; text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+td { padding: 11px 14px; border-bottom: 1px solid #f0f4f7; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tbody tr { transition: background 0.1s; }
+tbody tr:hover td { background: #f7fbfc; }
+
+/* ── STAT / KPI CARDS ── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  position: relative; overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  animation: fadeIn 0.3s ease;
+}
+.stat-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--primary), #00b4cc);
+  border-radius: 14px 14px 0 0;
+}
+.stat-number {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 38px; letter-spacing: 1px;
+  color: var(--primary-dark); line-height: 1; margin-top: 4px;
+}
+.stat-label { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); }
+
+/* ── SUBJECT / COURSE CARDS ── */
+.subject-card, .course-card {
+  background: #f7fafc;
+  padding: 18px 20px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  border-left: 4px solid var(--primary);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  transition: box-shadow 0.15s;
+}
+.subject-card:hover, .course-card:hover { box-shadow: 0 4px 16px rgba(0,105,123,0.08); }
+
+.subject-header, .course-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap; gap: 8px;
+}
+.subject-name, .course-name { font-size: 1.05em; font-weight: 700; color: var(--text); }
+.action-buttons { display: flex; gap: 6px; }
+
+.subject-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px; color: var(--muted); font-size: 12px;
+}
+
+/* ── FORM SECTIONS ── */
+form > .form-section-box,
+form[style*="background"] {
+  background: #f7fafc !important;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin-bottom: 24px;
+}
+
+/* inline style override for form wrappers */
+[style*="background: #f8f9fa"] {
+  background: #f7fafc !important;
+  border-radius: 14px !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* ── SLOT ROWS ── */
+.slot-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) auto;
+  gap: 10px; align-items: end;
+  margin-bottom: 10px;
+  background: white;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.slot-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 10px; border-radius: 8px;
+  background: white; border: 1px solid var(--border);
+  margin-bottom: 6px; font-size: 13px;
+}
+
+/* ── MODAL ── */
+.modal {
+  display: none;
+  position: fixed; z-index: 1000;
+  inset: 0;
+  background: rgba(10,20,30,0.55);
+  backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+}
+.modal.active { display: flex; }
+
+.modal-content {
+  background: white;
+  padding: 28px 30px;
+  border-radius: 18px;
+  max-width: 580px; width: 92%;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+  animation: modalIn 0.2s cubic-bezier(.34,1.3,.64,1);
+}
+@keyframes modalIn {
+  from { opacity:0; transform: scale(0.92) translateY(14px); }
+  to   { opacity:1; transform: none; }
+}
+
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: 1px; color: var(--primary-dark);
+}
+.close-modal, .close-btn {
+  background: #f3f7fa; border: none;
+  width: 30px; height: 30px; border-radius: 8px;
+  cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); transition: all 0.15s;
+}
+.close-modal:hover, .close-btn:hover { background: #fee2e2; color: var(--danger); }
+
+/* ── CAMERA ── */
+.camera-container { position: relative; margin: 18px 0; text-align: center; }
+video, canvas {
+  width: 100%; max-width: 580px;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  border: 2px solid var(--border);
+}
+canvas { display: none; }
+
+/* ── NO DATA ── */
+.no-data {
+  text-align: center; padding: 40px;
+  color: var(--muted); font-size: 13px;
+  font-weight: 500;
+}
+.no-data::before { content: '📭'; display: block; font-size: 32px; margin-bottom: 10px; }
+
+/* ── LIVE DOT ANIMATION ── */
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+  display: inline-block;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
+  50%      { box-shadow: 0 0 0 7px rgba(34,197,94,0.05); }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .tab-content { padding: 18px; }
+  .form-row { grid-template-columns: 1fr; }
+  header { padding: 14px 18px; }
+  .header-left h1 { font-size: 22px; }
+}
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <h1>👨‍🏫 Teacher Dashboard</h1>
+                <p>Smart Attendance Management System</p>
+            </div>
+            <div class="user-info">
+                <span class="live-dot"></span>
+                <span>Welcome, {{ username }}</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('courses')">My Courses</button>
+            <button class="tab-btn" onclick="showTab('classes')">Class Schedule</button>
+            <button class="tab-btn" onclick="showTab('students')">My Students</button>
+            <button class="tab-btn" onclick="showTab('attendance')">Attendance Records</button>
+        </div>
+
+        <!-- My Courses Tab -->
+        <div id="courses" class="tab-content active">
+            <h2 style="margin-bottom: 25px; color: #333;">My Courses</h2>
+            <div id="courses-message" class="message"></div>
+
+            <form id="courseForm" style="background: #f8f9fa; padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+                <h3 style="margin-bottom: 20px; color: #667eea;">Add New Course</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Course Name:</label>
+                        <input type="text" id="courseName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Course Code:</label>
+                        <input type="text" id="courseCode" required>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 10px;">
+                    <button type="submit" class="btn">Add Course</button>
+                </div>
+            </form>
+
+            <h3 style="margin-bottom: 20px; color: #333;">Your Courses</h3>
+            <div id="coursesList"></div>
+        </div>
+
+        <!-- Class Schedule Tab -->
+        <div id="classes" class="tab-content">
+            <h2 style="margin-bottom: 25px; color: #333;">Class Schedule</h2>
+            <div id="classes-message" class="message"></div>
+
+            <form id="classForm" style="background: #f8f9fa; padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+                <h3 style="margin-bottom: 20px; color: #667eea;">Add Class Slot</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Course:</label>
+                        <select id="classCourseSelect" required>
+                            <option value="">— Select Course —</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Attendance Window (min after end):</label>
+                        <input type="number" id="classAttendanceWindow" value="15" min="0" max="60" required>
+                    </div>
+                </div>
+                <h4 style="margin: 15px 0 10px; color: #555;">Weekly Slots</h4>
+                <div id="slotsContainer"></div>
+                <button type="button" class="btn btn-secondary" onclick="addSlotRow()">+ Add Slot</button>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="submit" class="btn">Save Class Slots</button>
+                </div>
+            </form>
+
+            <h3 style="margin-bottom: 20px; color: #333;">Scheduled Classes</h3>
+            <div id="classesList"></div>
+        </div>
+
+        <!-- My Students Tab -->
+        <div id="students" class="tab-content">
+            <h2 style="margin-bottom: 25px; color: #333;">My Students</h2>
+            <div id="students-message" class="message"></div>
+
+            <div class="form-row" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label>Filter by Course:</label>
+                    <select id="studentCourseFilter" onchange="loadStudents()">
+                        <option value="">All My Courses</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display:flex; align-items:end;">
+                    <button type="button" class="btn" onclick="openEnrollModal()">+ Enroll Student</button>
+                </div>
+            </div>
+            <div id="studentsTable"></div>
+        </div>
+
+        <!-- Enroll Student Modal -->
+        <div id="enrollModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Enroll Student in Course</h2>
+                    <button class="close-modal" onclick="closeModal('enrollModal')">&times;</button>
+                </div>
+                <div id="enroll-message" class="message"></div>
+                <div class="form-group">
+                    <label>Select Course:</label>
+                    <select id="enrollCourseSelect">
+                        <option value="">— Select Course —</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Select Student (registered by admin):</label>
+                    <select id="enrollStudentSelect">
+                        <option value="">— Select Student —</option>
+                    </select>
+                </div>
+                <div style="text-align:center; margin-top:20px;">
+                    <button class="btn" onclick="enrollStudent()">Enroll</button>
+                    <button class="btn btn-secondary" onclick="closeModal('enrollModal')">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Records Tab -->
+        <div id="attendance" class="tab-content">
+            <h2 style="margin-bottom: 25px; color: #333;">Attendance Records</h2>
+            <div id="attendance-message" class="message"></div>
+
+            <div class="form-row" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label>Date:</label>
+                    <input type="date" id="recordDate">
+                </div>
+                <div class="form-group">
+                    <label>Course:</label>
+                    <select id="recordCourseFilter">
+                        <option value="">All Courses</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display: flex; align-items: end;">
+                    <button type="button" class="btn" onclick="loadTeacherAttendance()">Search</button>
+                </div>
+            </div>
+
+            <div id="attendanceTable"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentStream = null;
+        let slotCount = 0;
+
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+
+        function showMessage(elId, msg, type) {
+            const el = document.getElementById(elId);
+            el.textContent = msg;
+            el.className = `message ${type}`;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 5000);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) window.location.href = '/logout';
+        }
+
+        function stopCamera() {
+            if (currentStream) { currentStream.getTracks().forEach(t => t.stop()); currentStream = null; }
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            stopCamera();
+            if (tabName === 'courses') loadCourses();
+            if (tabName === 'classes') { loadCoursesIntoClassDropdown(); loadClasses(); }
+            if (tabName === 'students') { loadCoursesIntoStudentFilter(); loadStudents(); }
+            if (tabName === 'attendance') { loadCoursesForFilter(); loadTeacherAttendance(); }
+        }
+
+        // ── Courses Tab ──────────────────────────────────────────────────
+        document.getElementById('courseForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('courseName').value,
+                code: document.getElementById('courseCode').value
+            };
+            try {
+                const res = await fetch('/teacher/courses/add', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showMessage('courses-message', result.message, 'success');
+                    document.getElementById('courseForm').reset();
+                    loadCourses();
+                } else {
+                    showMessage('courses-message', result.message, 'error');
+                }
+            } catch (err) {
+                showMessage('courses-message', 'Error: ' + err.message, 'error');
+            }
+        };
+
+        async function loadCourses() {
+            try {
+                const res = await fetch('/teacher/courses/list');
+                const courses = await res.json();
+                if (courses.length === 0) {
+                    document.getElementById('coursesList').innerHTML = '<div class="no-data">No courses added yet</div>';
+                    return;
+                }
+                let html = '';
+                courses.forEach(c => {
+                    html += `
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-name">${c.name} <span style="color:#667eea">(${c.code})</span></div>
+                                <div class="action-buttons">
+                                    <button class="btn btn-danger btn-small" onclick="deleteCourse(${c.id})">Delete Course</button>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                document.getElementById('coursesList').innerHTML = html;
+            } catch (err) {
+                document.getElementById('coursesList').innerHTML = '<div class="no-data">Error loading courses</div>';
+            }
+        }
+
+        async function deleteCourse(id) {
+            if (!confirm('Delete this course and all its class slots?')) return;
+            try {
+                const res = await fetch(`/teacher/courses/delete/${id}`, {method: 'DELETE'});
+                const result = await res.json();
+                if (result.success) { loadCourses(); }
+                else { alert('Error: ' + result.message); }
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+
+        // ── Classes Tab ──────────────────────────────────────────────────
+        async function loadCoursesIntoClassDropdown() {
+            const res = await fetch('/teacher/courses/list');
+            const courses = await res.json();
+            let opts = '<option value="">— Select Course —</option>';
+            courses.forEach(c => { opts += `<option value="${c.id}">${c.name} (${c.code})</option>`; });
+            document.getElementById('classCourseSelect').innerHTML = opts;
+        }
+
+        function addSlotRow(day = '', start = '', end = '') {
+            slotCount++;
+            const id = slotCount;
+            const div = document.createElement('div');
+            div.className = 'slot-row';
+            div.id = `slotRow${id}`;
+            div.innerHTML = `
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Day:</label>
+                    <select id="slotDay${id}" required>
+                        <option value="">Select Day</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Start Time:</label>
+                    <input type="time" id="slotStart${id}" required>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>End Time:</label>
+                    <input type="time" id="slotEnd${id}" required>
+                </div>
+                <button type="button" class="btn btn-danger" onclick="removeSlotRow(${id})">Remove</button>`;
+            document.getElementById('slotsContainer').appendChild(div);
+            if (day) document.getElementById(`slotDay${id}`).value = day;
+            if (start) document.getElementById(`slotStart${id}`).value = start;
+            if (end) document.getElementById(`slotEnd${id}`).value = end;
+        }
+
+        function removeSlotRow(id) {
+            const row = document.getElementById(`slotRow${id}`);
+            if (row) row.remove();
+        }
+
+        document.getElementById('classForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const courseId = document.getElementById('classCourseSelect').value;
+            if (!courseId) { showMessage('classes-message', 'Select a course', 'error'); return; }
+
+            const slotRows = document.querySelectorAll('#slotsContainer .slot-row');
+            if (slotRows.length === 0) { showMessage('classes-message', 'Add at least one slot', 'error'); return; }
+
+            const slots = [];
+            for (const row of slotRows) {
+                const sid = row.id.replace('slotRow', '');
+                const day = document.getElementById(`slotDay${sid}`).value;
+                const start = document.getElementById(`slotStart${sid}`).value;
+                const end = document.getElementById(`slotEnd${sid}`).value;
+                if (!day || !start || !end) { showMessage('classes-message', 'Fill all slot fields', 'error'); return; }
+                slots.push({day_of_week: day, start_time: start, end_time: end});
+            }
+
+            const data = {
+                course_id: parseInt(courseId),
+                attendance_window: parseInt(document.getElementById('classAttendanceWindow').value),
+                slots
+            };
+
+            try {
+                const res = await fetch('/teacher/subjects/add', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showMessage('classes-message', result.message, 'success');
+                    document.getElementById('classForm').reset();
+                    document.getElementById('slotsContainer').innerHTML = '';
+                    addSlotRow();
+                    loadClasses();
+                } else {
+                    showMessage('classes-message', result.message, 'error');
+                }
+            } catch (err) {
+                showMessage('classes-message', 'Error: ' + err.message, 'error');
+            }
+        };
+
+        async function loadClasses() {
+            try {
+                const res = await fetch('/teacher/courses/list');
+                const courses = await res.json();
+                if (courses.length === 0 || courses.every(c => c.slots.length === 0)) {
+                    document.getElementById('classesList').innerHTML = '<div class="no-data">No class slots scheduled yet</div>';
+                    return;
+                }
+                let html = '';
+                courses.forEach(c => {
+                    if (c.slots.length === 0) return;
+                    let slotsHtml = '';
+                    c.slots.forEach(s => {
+                        slotsHtml += `
+                            <div class="slot-item">
+                                <span>${s.day_of_week}: ${s.start_time} – ${s.end_time}</span>
+                                <button class="btn btn-danger btn-small" onclick="deleteSlot(${s.id})">Remove</button>
+                            </div>`;
+                    });
+                    html += `
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-name">${c.name} <span style="color:#667eea">(${c.code})</span></div>
+                            </div>
+                            <div class="slot-list">${slotsHtml}</div>
+                        </div>`;
+                });
+                document.getElementById('classesList').innerHTML = html || '<div class="no-data">No class slots scheduled yet</div>';
+            } catch (err) {
+                document.getElementById('classesList').innerHTML = '<div class="no-data">Error loading classes</div>';
+            }
+        }
+
+        async function deleteSlot(subjectId) {
+            if (!confirm('Remove this class slot?')) return;
+            try {
+                const res = await fetch(`/teacher/subjects/delete/${subjectId}`, {method: 'DELETE'});
+                const result = await res.json();
+                if (result.success) { loadClasses(); }
+                else { alert('Error: ' + result.message); }
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+
+        // ── Students Tab ─────────────────────────────────────────────────
+        async function loadCoursesIntoStudentFilter() {
+            const res = await fetch('/teacher/courses/list');
+            const courses = await res.json();
+            let opts = '<option value="">All My Courses</option>';
+            courses.forEach(c => { opts += `<option value="${c.id}">${c.name} (${c.code})</option>`; });
+            document.getElementById('studentCourseFilter').innerHTML = opts;
+        }
+
+        async function loadStudents() {
+            const courseId = document.getElementById('studentCourseFilter').value;
+            try {
+                let res, students;
+                if (courseId) {
+                    res = await fetch(`/teacher/courses/${courseId}/students`);
+                    students = await res.json();
+                    if (!Array.isArray(students)) { students = []; }
+                } else {
+                    res = await fetch('/teacher/students/list');
+                    students = await res.json();
+                }
+
+                if (students.length === 0) {
+                    document.getElementById('studentsTable').innerHTML = '<div class="no-data">No students enrolled yet</div>';
+                    return;
+                }
+
+                let html = `<table><thead><tr><th>Name</th><th>Roll Number</th><th>Actions</th></tr></thead><tbody>`;
+                students.forEach(s => {
+                    const unenrollBtn = courseId
+                        ? `<button class="btn btn-danger btn-small" onclick="unenrollStudent(${courseId}, ${s.id})">Unenroll</button>`
+                        : '';
+                    const thumb = s.photo_path
+                        ? `<img src="/${s.photo_path}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:8px;">`
+                        : `<span style="display:inline-block;width:36px;height:36px;border-radius:50%;background:#e0e0e0;vertical-align:middle;margin-right:8px;text-align:center;line-height:36px;font-size:18px;">👤</span>`;
+                    html += `<tr><td>${thumb}${s.name}</td><td>${s.roll_number}</td><td>${unenrollBtn}</td></tr>`;
+                });
+                html += '</tbody></table>';
+                document.getElementById('studentsTable').innerHTML = html;
+            } catch (err) {
+                document.getElementById('studentsTable').innerHTML = '<div class="no-data">Error loading students</div>';
+            }
+        }
+
+        async function openEnrollModal() {
+            // Load courses
+            const cRes = await fetch('/teacher/courses/list');
+            const courses = await cRes.json();
+            let cOpts = '<option value="">— Select Course —</option>';
+            courses.forEach(c => { cOpts += `<option value="${c.id}">${c.name} (${c.code})</option>`; });
+            document.getElementById('enrollCourseSelect').innerHTML = cOpts;
+
+            // Load all admin-registered students
+            const sRes = await fetch('/teacher/all_students');
+            const students = await sRes.json();
+            let sOpts = '<option value="">— Select Student —</option>';
+            students.forEach(s => { sOpts += `<option value="${s.id}">${s.name} (${s.roll_number})</option>`; });
+            document.getElementById('enrollStudentSelect').innerHTML = sOpts;
+
+            openModal('enrollModal');
+        }
+
+        async function enrollStudent() {
+            const courseId = document.getElementById('enrollCourseSelect').value;
+            const studentId = document.getElementById('enrollStudentSelect').value;
+            if (!courseId || !studentId) {
+                showMessage('enroll-message', 'Select both a course and a student', 'error');
+                return;
+            }
+            try {
+                const res = await fetch(`/teacher/courses/${courseId}/enroll`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({student_id: parseInt(studentId)})
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showMessage('enroll-message', result.message, 'success');
+                    loadStudents();
+                } else {
+                    showMessage('enroll-message', result.message, 'error');
+                }
+            } catch (err) {
+                showMessage('enroll-message', 'Error: ' + err.message, 'error');
+            }
+        }
+
+        async function unenrollStudent(courseId, studentId) {
+            if (!confirm('Remove this student from the course?')) return;
+            try {
+                const res = await fetch(`/teacher/courses/${courseId}/unenroll/${studentId}`, {method: 'DELETE'});
+                const result = await res.json();
+                if (result.success) { loadStudents(); }
+                else { alert('Error: ' + result.message); }
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+
+        // ── Attendance Tab ───────────────────────────────────────────────
+        async function loadCoursesForFilter() {
+            try {
+                const res = await fetch('/teacher/subjects/list');
+                const subjects = await res.json();
+                const seen = new Set();
+                let opts = '<option value="">All Courses</option>';
+                subjects.forEach(s => {
+                    if (!seen.has(s.code)) {
+                        seen.add(s.code);
+                        opts += `<option value="${s.id}">${s.name} (${s.code})</option>`;
+                    }
+                });
+                document.getElementById('recordCourseFilter').innerHTML = opts;
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadTeacherAttendance() {
+            const date = document.getElementById('recordDate').value;
+            const subjectId = document.getElementById('recordCourseFilter').value;
+            let url = `/teacher/attendance?date=${date}`;
+            if (subjectId) url += `&subject_id=${subjectId}`;
+            try {
+                const res = await fetch(url);
+                const records = await res.json();
+                if (records.length === 0) {
+                    document.getElementById('attendanceTable').innerHTML = '<div class="no-data">No attendance records found</div>';
+                    return;
+                }
+                let html = `<table><thead><tr><th>Name</th><th>Roll Number</th><th>Course</th><th>Time</th><th>Status</th></tr></thead><tbody>`;
+                records.forEach(r => {
+                    html += `<tr><td>${r.name}</td><td>${r.roll_number}</td><td>${r.subject_name} (${r.subject_code})</td><td>${new Date(r.timestamp).toLocaleTimeString()}</td><td>${r.status}</td></tr>`;
+                });
+                html += '</tbody></table>';
+                document.getElementById('attendanceTable').innerHTML = html;
+            } catch (err) {
+                document.getElementById('attendanceTable').innerHTML = '<div class="no-data">Error loading attendance</div>';
+            }
+        }
+
+        // init
+        addSlotRow();
+        loadCourses();
+    </script>
+</body>
+</html>

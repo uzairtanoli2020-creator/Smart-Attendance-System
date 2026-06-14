@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Smart Attendance System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00697B;
+            --primary-dark: #004e5c;
+            --primary-light: #e0f4f7;
+            --accent: #f0a500;
+            --danger: #e53935;
+            --text: #0f1c26;
+            --muted: #7a8fa0;
+            --border: rgba(255,255,255,0.18);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #021c24;
+            background: radial-gradient(circle at 20% 20%, #04323d 0%, #021c24 55%, #010f14 100%);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative glow rings */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 480px; height: 480px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,180,204,0.08);
+            bottom: -160px; left: -160px;
+            pointer-events: none;
+        }
+        body::after {
+            content: '';
+            position: absolute;
+            width: 320px; height: 320px;
+            border-radius: 50%;
+            border: 1px solid rgba(240,165,0,0.08);
+            top: -80px; right: -80px;
+            pointer-events: none;
+        }
+
+        /* ── GLASS CARD ── */
+        .login-card {
+            width: 100%;
+            max-width: 380px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 36px 32px;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+            animation: slideUp 0.35s ease;
+            position: relative;
+            z-index: 1;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        /* Brand */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 28px;
+        }
+        .brand-dot {
+            width: 9px; height: 9px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--accent);
+        }
+        .brand-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 24px;
+            letter-spacing: 3px;
+            color: #fff;
+        }
+
+        .card-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 32px;
+            letter-spacing: 2px;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .card-subtitle {
+            font-size: 12.5px;
+            color: rgba(255,255,255,0.45);
+            text-align: center;
+            margin-bottom: 26px;
+        }
+
+        /* Role selector */
+        .role-selector {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 22px;
+            background: rgba(0,0,0,0.2);
+            padding: 4px;
+            border-radius: 11px;
+            border: 1px solid var(--border);
+        }
+        .role-btn {
+            flex: 1;
+            padding: 8px 4px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            color: rgba(255,255,255,0.5);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            letter-spacing: 0.2px;
+        }
+        .role-btn:hover { color: rgba(255,255,255,0.85); }
+        .role-btn.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(0,105,123,0.4);
+        }
+
+        /* Form */
+        .form-group { margin-bottom: 14px; }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px 13px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            font-size: 13px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            transition: all 0.15s;
+        }
+        input::placeholder { color: rgba(255,255,255,0.3); }
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255,255,255,0.09);
+            box-shadow: 0 0 0 3px rgba(0,105,123,0.25);
+        }
+
+        /* Login button */
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer;
+            transition: all 0.15s;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            letter-spacing: 0.3px;
+        }
+        .btn-login:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(0,105,123,0.35);
+        }
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Spinner */
+        .btn-spinner {
+            display: none;
+            width: 14px; height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-login.loading .btn-spinner { display: block; }
+        .btn-login.loading .btn-text::after { content: '...'; }
+
+        /* Message */
+        .message {
+            padding: 10px 14px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 500;
+            display: none;
+            margin-bottom: 16px;
+            align-items: center;
+            gap: 8px;
+        }
+        .message.error {
+            background: rgba(229,57,53,0.12);
+            color: #ff8a80;
+            border: 1px solid rgba(229,57,53,0.3);
+            display: flex;
+        }
+        .message.success {
+            background: rgba(46,125,50,0.12);
+            color: #81c784;
+            border: 1px solid rgba(46,125,50,0.3);
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="brand">
+            <div class="brand-dot"></div>
+            <span class="brand-name">SMART ATTEND</span>
+        </div>
+
+        <div class="card-title">Sign In</div>
+        <p class="card-subtitle">Select your role and enter your credentials</p>
+
+        <!-- Role selector -->
+        <div class="role-selector">
+            <button class="role-btn active" onclick="selectRole('admin')" id="adminBtn">Admin</button>
+            <button class="role-btn" onclick="selectRole('teacher')" id="teacherBtn">Teacher</button>
+            <button class="role-btn" onclick="selectRole('student')" id="studentBtn">Student</button>
+        </div>
+
+        <!-- Message -->
+        <div id="message" class="message"></div>
+
+        <!-- Form -->
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label id="usernameLabel">Username</label>
+                <input type="text" id="username" placeholder="Enter username" required autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter password" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn-login" id="loginBtn">
+                <div class="btn-spinner"></div>
+                <span class="btn-text">Sign In</span>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        let selectedRole = 'admin';
+
+        function selectRole(role) {
+            selectedRole = role;
+
+            document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
+
+            if (role === 'admin') {
+                document.getElementById('adminBtn').classList.add('active');
+                document.getElementById('usernameLabel').textContent = 'Username';
+                document.getElementById('username').placeholder = 'Enter username';
+            } else if (role === 'teacher') {
+                document.getElementById('teacherBtn').classList.add('active');
+                document.getElementById('usernameLabel').textContent = 'Username';
+                document.getElementById('username').placeholder = 'Enter username';
+            } else {
+                document.getElementById('studentBtn').classList.add('active');
+                document.getElementById('usernameLabel').textContent = 'Roll Number';
+                document.getElementById('username').placeholder = 'Enter roll number';
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+
+            loginBtn.disabled = true;
+            loginBtn.classList.add('loading');
+
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, user_type: selectedRole })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showMessage('Login successful! Redirecting...', 'success');
+                    setTimeout(() => { window.location.href = result.redirect; }, 900);
+                } else {
+                    showMessage(result.message || 'Invalid credentials', 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.classList.remove('loading');
+                }
+            } catch (error) {
+                showMessage('Connection error: ' + error.message, 'error');
+                loginBtn.disabled = false;
+                loginBtn.classList.remove('loading');
+            }
+        }
+
+        function showMessage(text, type) {
+            const msgEl = document.getElementById('message');
+            msgEl.textContent = type === 'error' ? '⚠ ' + text : '✓ ' + text;
+            msgEl.className = `message ${type}`;
+            msgEl.style.display = 'flex';
+
+            if (type === 'error') {
+                setTimeout(() => { msgEl.style.display = 'none'; }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>

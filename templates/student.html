@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Smart Attendance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+       :root {
+  --primary: #00697B;
+  --primary-dark: #004e5c;
+  --primary-light: #e0f4f7;
+  --accent: #f0a500;
+  --danger: #e53935;
+  --success: #2e7d32;
+  --bg: #eef2f5;
+  --card: #ffffff;
+  --text: #0f1c26;
+  --muted: #7a8fa0;
+  --border: #d8e2ea;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c0ccd6; border-radius: 10px; }
+
+/* ── HEADER ── */
+.container { max-width: 1400px; margin: 0 auto; }
+
+header.student-hero-header {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  margin-bottom: 28px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+  min-height: 160px;
+}
+
+/* Blurred student photo as full background */
+.hero-bg {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center top;
+  filter: blur(24px) brightness(0.38) saturate(1.5);
+  transform: scale(1.12);
+}
+
+/* Dark teal gradient overlay */
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(120deg,
+    rgba(2,28,36,0.88) 0%,
+    rgba(0,105,123,0.6) 55%,
+    rgba(0,180,204,0.22) 100%);
+}
+
+/* Main content row */
+.hero-body {
+  position: relative; z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 28px;
+}
+
+/* Photo */
+.hero-photo-wrap {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 7px;
+  flex-shrink: 0;
+}
+.hero-photo {
+  width: 100px; height: 100px;
+  border-radius: 50%; object-fit: cover;
+  border: 3px solid rgba(255,255,255,0.85);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+  display: block;
+}
+.hero-photo-fallback {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 3px solid rgba(255,255,255,0.2);
+  font-size: 46px;
+  display: flex; align-items: center; justify-content: center;
+}
+.hero-active-badge {
+  background: rgba(34,197,94,0.18);
+  border: 1px solid rgba(34,197,94,0.45);
+  color: #4ade80;
+  font-size: 10px; font-weight: 700;
+  padding: 3px 9px; border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+
+/* Info text */
+.hero-info { flex: 1; }
+.hero-tag {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.4); margin-bottom: 4px;
+}
+.hero-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px; letter-spacing: 2px;
+  color: #fff; line-height: 1.1; margin-bottom: 4px;
+}
+.hero-roll {
+  font-size: 13px; font-weight: 700;
+  color: #67e8f9; letter-spacing: 0.5px; margin-bottom: 2px;
+}
+.hero-date { font-size: 12px; color: rgba(255,255,255,0.4); }
+
+/* Logout aligned top-right */
+.hero-actions {
+  display: flex; align-items: center;
+  gap: 10px; align-self: flex-start;
+}
+
+@media (max-width: 520px) {
+  .hero-body { flex-wrap: wrap; padding: 20px 18px; }
+  .hero-name { font-size: 26px; }
+  .hero-actions { margin-left: auto; }
+}
+
+.header-left h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px;
+  letter-spacing: 2px;
+  color: #fff;
+  text-shadow: none;
+}
+
+.header-left p { color: rgba(255,255,255,0.45); font-size: 13px; margin-top: 2px; }
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.07);
+  padding: 10px 18px;
+  border-radius: 40px;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.75);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.logout-btn {
+  padding: 7px 18px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.logout-btn:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,105,123,0.3); }
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  background: var(--card);
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+}
+
+.tab-btn {
+  padding: 9px 18px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 9px;
+  transition: all 0.15s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.2px;
+}
+.tab-btn:hover { background: var(--primary-light); color: var(--primary-dark); }
+.tab-btn.active { background: var(--primary); color: #fff; box-shadow: 0 2px 8px rgba(0,105,123,0.25); }
+
+/* ── TAB CONTENT ── */
+.tab-content {
+  display: none;
+  background: var(--card);
+  padding: 32px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+}
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── FORMS ── */
+.form-group { margin-bottom: 16px; }
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+input[type="text"], input[type="password"], input[type="date"],
+input[type="time"], input[type="number"], select {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #fafcfd;
+  color: var(--text);
+  transition: all 0.15s;
+  appearance: none;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0,105,123,0.1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  padding: 9px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin: 6px 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,105,123,0.25); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+.btn-secondary { background: #8b5cf6; }
+.btn-secondary:hover { background: #7c3aed; box-shadow: 0 4px 12px rgba(139,92,246,0.3); }
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff; border: none;
+  padding: 7px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer; transition: all 0.15s;
+  display: inline-flex; align-items: center;
+}
+.btn-danger:hover { background: #c62828; transform: translateY(-1px); }
+
+.btn-edit {
+  background: var(--accent);
+  color: #fff; border: none;
+  padding: 7px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer; transition: all 0.15s;
+  display: inline-flex; align-items: center;
+}
+.btn-edit:hover { background: #d4920a; transform: translateY(-1px); }
+
+.btn-small { padding: 5px 10px; font-size: 11px; border-radius: 7px; margin: 2px; }
+
+/* ── MESSAGES ── */
+.message {
+  padding: 11px 16px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  display: none;
+  margin: 12px 0;
+  align-items: center;
+  gap: 8px;
+}
+.message.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; display: flex; }
+.message.error   { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; display: flex; }
+
+/* ── TABLES ── */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); margin-top: 12px; }
+
+thead { background: #f3f8fa; }
+th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.7px; text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+td { padding: 11px 14px; border-bottom: 1px solid #f0f4f7; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tbody tr { transition: background 0.1s; }
+tbody tr:hover td { background: #f7fbfc; }
+
+/* ── STAT / KPI CARDS ── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  position: relative; overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  animation: fadeIn 0.3s ease;
+}
+.stat-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--primary), #00b4cc);
+  border-radius: 14px 14px 0 0;
+}
+.stat-number {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 38px; letter-spacing: 1px;
+  color: var(--primary-dark); line-height: 1; margin-top: 4px;
+}
+.stat-label { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); }
+
+/* ── SUBJECT / COURSE CARDS ── */
+.subject-card, .course-card {
+  background: #f7fafc;
+  padding: 18px 20px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  border-left: 4px solid var(--primary);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  transition: box-shadow 0.15s;
+}
+.subject-card:hover, .course-card:hover { box-shadow: 0 4px 16px rgba(0,105,123,0.08); }
+
+.subject-header, .course-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap; gap: 8px;
+}
+.subject-name, .course-name { font-size: 1.05em; font-weight: 700; color: var(--text); }
+.action-buttons { display: flex; gap: 6px; }
+
+.subject-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px; color: var(--muted); font-size: 12px;
+}
+
+/* ── FORM SECTIONS ── */
+form > .form-section-box,
+form[style*="background"] {
+  background: #f7fafc !important;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin-bottom: 24px;
+}
+
+/* inline style override for form wrappers */
+[style*="background: #f8f9fa"] {
+  background: #f7fafc !important;
+  border-radius: 14px !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* ── SLOT ROWS ── */
+.slot-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) auto;
+  gap: 10px; align-items: end;
+  margin-bottom: 10px;
+  background: white;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.slot-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 10px; border-radius: 8px;
+  background: white; border: 1px solid var(--border);
+  margin-bottom: 6px; font-size: 13px;
+}
+
+/* ── MODAL ── */
+.modal {
+  display: none;
+  position: fixed; z-index: 1000;
+  inset: 0;
+  background: rgba(10,20,30,0.55);
+  backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+}
+.modal.active { display: flex; }
+
+.modal-content {
+  background: white;
+  padding: 28px 30px;
+  border-radius: 18px;
+  max-width: 580px; width: 92%;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+  animation: modalIn 0.2s cubic-bezier(.34,1.3,.64,1);
+}
+@keyframes modalIn {
+  from { opacity:0; transform: scale(0.92) translateY(14px); }
+  to   { opacity:1; transform: none; }
+}
+
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: 1px; color: var(--primary-dark);
+}
+.close-modal, .close-btn {
+  background: #f3f7fa; border: none;
+  width: 30px; height: 30px; border-radius: 8px;
+  cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); transition: all 0.15s;
+}
+.close-modal:hover, .close-btn:hover { background: #fee2e2; color: var(--danger); }
+
+/* ── CAMERA ── */
+.camera-container { position: relative; margin: 18px 0; text-align: center; }
+video, canvas {
+  width: 100%; max-width: 580px;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  border: 2px solid var(--border);
+}
+canvas { display: none; }
+
+/* ── NO DATA ── */
+.no-data {
+  text-align: center; padding: 40px;
+  color: var(--muted); font-size: 13px;
+  font-weight: 500;
+}
+.no-data::before { content: '📭'; display: block; font-size: 32px; margin-bottom: 10px; }
+
+/* ── LIVE DOT ANIMATION ── */
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+  display: inline-block;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
+  50%      { box-shadow: 0 0 0 7px rgba(34,197,94,0.05); }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .tab-content { padding: 18px; }
+  .form-row { grid-template-columns: 1fr; }
+  header { padding: 14px 18px; }
+  .header-left h1 { font-size: 22px; }
+
+        }
+        /* ── STUDENT ID CARD ── */
+.student-id-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 180px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+
+/* Blurred photo fills the entire card background */
+.id-card-bg {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center top;
+  filter: blur(22px) brightness(0.45) saturate(1.4);
+  transform: scale(1.1); /* hide blur edges */
+}
+
+/* Dark gradient on top of blur */
+.id-card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(120deg,
+    rgba(2,28,36,0.82) 0%,
+    rgba(0,105,123,0.55) 60%,
+    rgba(0,180,204,0.25) 100%);
+}
+
+.id-card-body {
+  position: relative; z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 28px 32px;
+}
+
+/* Photo column */
+.id-photo-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.id-photo {
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255,255,255,0.85);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+  display: block;
+}
+
+.id-photo-fallback {
+  display: none;
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 3px solid rgba(255,255,255,0.3);
+  font-size: 52px;
+  align-items: center; justify-content: center;
+}
+
+.id-active-badge {
+  background: rgba(34,197,94,0.2);
+  border: 1px solid rgba(34,197,94,0.5);
+  color: #4ade80;
+  font-size: 11px; font-weight: 700;
+  padding: 3px 10px; border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+
+/* Info column */
+.id-info { flex: 1; }
+
+.id-tag {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 6px;
+}
+
+.id-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 34px; letter-spacing: 2px;
+  color: #fff; line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.id-roll {
+  font-size: 14px; font-weight: 700;
+  color: #67e8f9;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+}
+
+.id-date {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+}
+
+.id-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.12);
+  margin: 12px 0 8px;
+}
+
+.id-footer {
+  font-size: 11px; font-weight: 600;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 1px; text-transform: uppercase;
+}
+
+@media (max-width: 520px) {
+  .id-card-body { flex-direction: column; padding: 24px 20px; text-align: center; }
+  .id-name { font-size: 26px; }
+  .id-photo, .id-photo-fallback { width: 90px; height: 90px; }
+}
+/* ── CIRCULAR CAMERA (student) ── */
+.camera-container {
+  position: relative; margin: 18px 0;
+  display: flex; justify-content: center;
+}
+.cam-circle-wrap {
+  position: relative;
+  width: 240px; height: 240px;
+  border-radius: 50%; overflow: hidden;
+  box-shadow: 0 0 0 4px var(--primary), 0 8px 32px rgba(0,105,123,0.25);
+  background: #0a1a20; flex-shrink: 0;
+}
+.cam-circle-wrap video {
+  width: 100%; height: 100%;
+  object-fit: cover; border-radius: 50%; display: block;
+}
+canvas { display: none; }
+
+.cam-overlay {
+  position: absolute; inset: 0; border-radius: 50%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  pointer-events: none; z-index: 10; transition: background 0.3s;
+}
+.cam-overlay.hidden { display: none; }
+.cam-overlay.idle { background: transparent; }
+.cam-ring {
+  width: 180px; height: 180px; border-radius: 50%;
+  border: 3px solid rgba(0,180,204,0.5); position: absolute;
+  animation: ringPulse 2s ease-in-out infinite;
+}
+.cam-ring:nth-child(2) { animation-delay: 0.6s; opacity: 0.5; width: 200px; height: 200px; }
+@keyframes ringPulse {
+  0%,100% { transform: scale(1); opacity: 0.6; }
+  50%      { transform: scale(1.07); opacity: 1; }
+}
+.cam-overlay.scanning { background: rgba(0,20,30,0.35); }
+.cam-spinner {
+  width: 100px; height: 100px; border-radius: 50%;
+  border: 4px solid rgba(255,255,255,0.12);
+  border-top-color: #00b4cc;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.cam-overlay.success { background: rgba(0,20,10,0.55); }
+.cam-tick-circle {
+  fill: none; stroke: #22c55e; stroke-width: 5;
+  stroke-dasharray: 166; stroke-dashoffset: 166;
+  animation: drawCircle 0.5s ease forwards;
+}
+.cam-tick-check {
+  fill: none; stroke: #22c55e; stroke-width: 5;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 48; stroke-dashoffset: 48;
+  animation: drawCheck 0.3s 0.4s ease forwards;
+}
+.cam-overlay.error-state { background: rgba(30,0,0,0.55); }
+.cam-x-circle {
+  fill: none; stroke: #ef4444; stroke-width: 5;
+  stroke-dasharray: 166; stroke-dashoffset: 166;
+  animation: drawCircle 0.5s ease forwards;
+}
+.cam-x-line, .cam-x-line2 {
+  fill: none; stroke: #ef4444; stroke-width: 5; stroke-linecap: round;
+  stroke-dasharray: 40; stroke-dashoffset: 40;
+}
+.cam-x-line  { animation: drawCheck 0.25s 0.4s ease forwards; }
+.cam-x-line2 { animation: drawCheck 0.25s 0.5s ease forwards; }
+@keyframes drawCircle { to { stroke-dashoffset: 0; } }
+@keyframes drawCheck  { to { stroke-dashoffset: 0; } }
+.cam-caption {
+  color: #fff; font-size: 12px; font-weight: 600;
+  margin-top: 10px; text-align: center;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  max-width: 160px; line-height: 1.4;
+}
+@keyframes flashFade { 0% { opacity: 0.9; } 100% { opacity: 0; } }
+.cam-flash {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: white; pointer-events: none; z-index: 20;
+  animation: flashFade 0.35s ease forwards;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="student-hero-header" id="studentHeader">
+            <!-- Blurred photo background layer -->
+            <div class="hero-bg" id="heroBg"></div>
+            <div class="hero-overlay"></div>
+
+            <!-- Content -->
+            <div class="hero-body">
+                <!-- Photo -->
+                <div class="hero-photo-wrap">
+                    <img id="profilePhoto" src="" alt="" class="hero-photo" style="display:none;">
+                    <div class="hero-photo-fallback" id="heroFallback">👨‍🎓</div>
+                    <span class="hero-active-badge">● Active</span>
+                </div>
+
+                <!-- Info -->
+                <div class="hero-info">
+                    <div class="hero-tag">STUDENT PORTAL</div>
+                    <h1 class="hero-name" id="profileName">{{ roll_number }}</h1>
+                    <p class="hero-roll" id="profileRoll"></p>
+                    <p class="hero-date" id="profileDate"></p>
+                </div>
+
+                <!-- Top-right actions -->
+                <div class="hero-actions">
+                    <span class="live-dot"></span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('attendance')">Mark Attendance</button>
+            <button class="tab-btn" onclick="showTab('myattendance')">My Attendance</button>
+        </div>
+
+        <!-- Mark Attendance Tab -->
+        <div id="attendance" class="tab-content active">
+            <h2 style="margin-bottom: 25px; color: #333;">📸 Mark Your Attendance</h2>
+            <div id="attendance-message" class="message"></div>
+            
+            <div id="currentClass" style="display: none;" class="current-class-info">
+                <h3>📚 Current Class</h3>
+                <div class="class-details" id="classInfo"></div>
+            </div>
+
+            <div id="noClass" style="display: none;" class="warning-box">
+                <strong>⚠️ No Active Class</strong><br>
+                There is no class scheduled at this time. Please check your schedule or contact admin.
+            </div>
+            
+            <div class="attendance-info">
+                <h3>Instructions:</h3>
+                <ul style="padding-left: 20px; color: #666;">
+                    <li style="margin: 8px 0;">Attendance can only be marked during class hours</li>
+                    <li style="margin: 8px 0;">You have a time window after class ends to mark attendance</li>
+                    <li style="margin: 8px 0;">Click "Start Camera" to activate your webcam</li>
+                    <li style="margin: 8px 0;">Position your face clearly in the frame</li>
+                    <li style="margin: 8px 0;">Click "Mark Attendance" to capture and verify</li>
+                    <li style="margin: 8px 0;">You can only mark attendance once per subject per day</li>
+                </ul>
+            </div>
+
+            <div class="camera-container">
+                <div class="cam-circle-wrap" id="attendanceCamWrap">
+                    <video id="attendanceVideo" autoplay playsinline></video>
+                    <div class="cam-overlay idle" id="attendanceCamOverlay">
+                        <div class="cam-ring"></div>
+                        <div class="cam-ring"></div>
+                        <span class="cam-caption">Tap Start Camera</span>
+                    </div>
+                </div>
+                <canvas id="attendanceCanvas"></canvas>
+            </div>
+            
+            <div style="text-align: center;">
+                <button class="btn" onclick="startCamera()">Start Camera</button>
+                <button class="btn btn-secondary" onclick="markAttendance()">Mark Attendance</button>
+            </div>
+        </div>
+
+        <!-- My Attendance Tab -->
+        <div id="myattendance" class="tab-content">
+            <h2 style="margin-bottom: 25px; color: #333;">📊 My Attendance Record</h2>
+            
+            <div class="stats" id="statsContainer">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalDays">0</div>
+                    <div class="stat-label">Total Days Present</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="thisMonth">0</div>
+                    <div class="stat-label">This Month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="attendanceRate">0%</div>
+                    <div class="stat-label">Attendance Rate</div>
+                </div>
+            </div>
+
+            <div id="attendanceTable"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentStream = null;
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            stopCamera();
+            
+            if (tabName === 'attendance') {
+                checkCurrentClass();
+            }
+            if (tabName === 'myattendance') {
+                loadMyAttendance();
+            }
+        }
+
+        async function checkCurrentClass() {
+            try {
+                const response = await fetch('/get_current_subject');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const subject = result.subject;
+                    document.getElementById('currentClass').style.display = 'block';
+                    document.getElementById('noClass').style.display = 'none';
+                    
+                    document.getElementById('classInfo').innerHTML = `
+                        <strong>${subject.name} (${subject.code})</strong><br>
+                        <strong>Class Time:</strong> ${subject.start_time} - ${subject.end_time}<br>
+                        <strong>Attendance Window:</strong> Class time + ${subject.attendance_window} minutes<br>
+                        <em style="color: #1976d2;">✓ You can mark attendance now</em>
+                    `;
+                } else {
+                    document.getElementById('currentClass').style.display = 'none';
+                    document.getElementById('noClass').style.display = 'block';
+                }
+            } catch (err) {
+                console.error('Error checking class:', err);
+            }
+        }
+
+        // ── Camera overlay helper ─────────────────────────────────
+        function setAttendanceCamOverlay(state, caption) {
+            const ov = document.getElementById('attendanceCamOverlay');
+            if (!ov) return;
+            ov.className = 'cam-overlay';
+            ov.innerHTML = '';
+            if (state === 'hidden') { ov.classList.add('hidden'); return; }
+            if (state === 'idle') {
+                ov.classList.add('idle');
+                ov.innerHTML = `<div class="cam-ring"></div><div class="cam-ring"></div><span class="cam-caption">${caption || 'Tap Start Camera'}</span>`;
+            } else if (state === 'scanning') {
+                ov.classList.add('scanning');
+                ov.innerHTML = `<div class="cam-spinner"></div><span class="cam-caption">${caption || 'Processing...'}</span>`;
+            } else if (state === 'success') {
+                ov.classList.add('success');
+                ov.innerHTML = `
+                    <svg width="80" height="80" viewBox="0 0 52 52">
+                        <circle class="cam-tick-circle" cx="26" cy="26" r="25"/>
+                        <polyline class="cam-tick-check" points="14,27 22,35 38,17"/>
+                    </svg>
+                    <span class="cam-caption">${caption || 'Marked!'}</span>`;
+            } else if (state === 'error') {
+                ov.classList.add('error-state');
+                ov.innerHTML = `
+                    <svg width="80" height="80" viewBox="0 0 52 52">
+                        <circle class="cam-x-circle" cx="26" cy="26" r="25"/>
+                        <line class="cam-x-line"  x1="16" y1="16" x2="36" y2="36"/>
+                        <line class="cam-x-line2" x1="36" y1="16" x2="16" y2="36"/>
+                    </svg>
+                    <span class="cam-caption">${caption || 'Error'}</span>`;
+            }
+        }
+
+        async function startCamera() {
+            try {
+                stopCamera();
+                setAttendanceCamOverlay('scanning', 'Starting camera...');
+                const video = document.getElementById('attendanceVideo');
+                currentStream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 640, height: 480 }
+                });
+                video.srcObject = currentStream;
+                await new Promise(r => video.onloadedmetadata = r);
+                setAttendanceCamOverlay('hidden');
+            } catch (err) {
+                setAttendanceCamOverlay('error', 'No camera access');
+                showMessage('Error accessing camera: ' + err.message, 'error');
+            }
+        }
+
+        function stopCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+            setAttendanceCamOverlay('idle', 'Tap Start Camera');
+        }
+
+        async function markAttendance() {
+            const video = document.getElementById('attendanceVideo');
+            const canvas = document.getElementById('attendanceCanvas');
+
+            if (!video.videoWidth) {
+                setAttendanceCamOverlay('error', 'Start camera first');
+                setTimeout(() => setAttendanceCamOverlay('idle', 'Tap Start Camera'), 2000);
+                showMessage('Please start the camera first', 'error');
+                return;
+            }
+
+            // Flash + capture
+            const wrap = document.getElementById('attendanceCamWrap');
+            const flash = document.createElement('div');
+            flash.className = 'cam-flash';
+            wrap.appendChild(flash);
+            setTimeout(() => flash.remove(), 400);
+
+            setAttendanceCamOverlay('scanning', 'Verifying face...');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+
+            const formData = new FormData();
+            formData.append('image', canvas.toDataURL('image/jpeg'));
+
+            try {
+                const response = await fetch('/mark_attendance', { method: 'POST', body: formData });
+                const result = await response.json();
+
+                if (result.success) {
+                    setAttendanceCamOverlay('success', 'Attendance Marked!');
+                    showMessage(result.message, 'success');
+                    setTimeout(() => {
+                        setAttendanceCamOverlay('hidden');
+                        loadMyAttendance();
+                    }, 2500);
+                } else {
+                    setAttendanceCamOverlay('error', result.message || 'Failed');
+                    showMessage(result.message, 'error');
+                    setTimeout(() => setAttendanceCamOverlay('hidden'), 2800);
+                }
+            } catch (err) {
+                setAttendanceCamOverlay('error', 'Network error');
+                showMessage('Error: ' + err.message, 'error');
+                setTimeout(() => setAttendanceCamOverlay('hidden'), 2500);
+            }
+        }
+
+        async function loadMyAttendance() {
+            try {
+                const response = await fetch('/get_my_attendance');
+                const records = await response.json();
+                
+                // Calculate stats
+                const totalDays = records.length;
+                const today = new Date();
+                const thisMonth = records.filter(r => {
+                    const recordDate = new Date(r.timestamp);
+                    return recordDate.getMonth() === today.getMonth() && 
+                           recordDate.getFullYear() === today.getFullYear();
+                }).length;
+                
+                // Calculate attendance rate (assuming 30 working days per month)
+                const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+                const workingDays = Math.min(today.getDate(), daysInMonth);
+                const rate = workingDays > 0 ? Math.round((thisMonth / workingDays) * 100) : 0;
+                
+                document.getElementById('totalDays').textContent = totalDays;
+                document.getElementById('thisMonth').textContent = thisMonth;
+                document.getElementById('attendanceRate').textContent = rate + '%';
+                
+                // Display table
+                if (records.length === 0) {
+                    document.getElementById('attendanceTable').innerHTML = 
+                        '<div class="no-data">No attendance records found</div>';
+                    return;
+                }
+                
+                let tableHtml = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Subject</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                records.forEach(record => {
+                    const date = new Date(record.timestamp);
+                    const dateStr = date.toLocaleDateString();
+                    const timeStr = date.toLocaleTimeString();
+                    tableHtml += `
+                        <tr>
+                            <td>${dateStr}</td>
+                            <td>${timeStr}</td>
+                            <td>${record.subject_name} (${record.subject_code})</td>
+                            <td><span style="color: #28a745; font-weight: 600;">✓ ${record.status}</span></td>
+                        </tr>
+                    `;
+                });
+                
+                tableHtml += '</tbody></table>';
+                document.getElementById('attendanceTable').innerHTML = tableHtml;
+            } catch (err) {
+                document.getElementById('attendanceTable').innerHTML = 
+                    '<div class="no-data">Error loading attendance records</div>';
+            }
+        }
+
+        function showMessage(message, type) {
+            const msgEl = document.getElementById('attendance-message');
+            msgEl.textContent = message;
+            msgEl.className = `message ${type}`;
+            msgEl.style.display = 'block';
+            
+            setTimeout(() => {
+                msgEl.style.display = 'none';
+            }, 5000);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '/logout';
+            }
+        }
+
+        // Load student profile
+        async function loadProfile() {
+            try {
+                const res = await fetch('/student/profile');
+                const p = await res.json();
+                if (!p.name) return;
+
+                if (p.photo_path) {
+                    const src = '/' + p.photo_path;
+                    // One photo: both background blur and circular foreground
+                    document.getElementById('heroBg').style.backgroundImage = `url('${src}')`;
+                    const photo = document.getElementById('profilePhoto');
+                    photo.src = src;
+                    photo.style.display = 'block';
+                    document.getElementById('heroFallback').style.display = 'none';
+                }
+
+                document.getElementById('profileName').textContent = p.name;
+                document.getElementById('profileRoll').textContent = 'Roll No: ' + p.roll_number;
+                document.getElementById('profileDate').textContent =
+                    'Registered: ' + new Date(p.registered_date).toLocaleDateString('en-GB',
+                    { day: 'numeric', month: 'long', year: 'numeric' });
+
+            } catch (err) { console.error('Profile load error:', err); }
+        }
+
+        loadProfile();
+
+        // Check class on load
+        checkCurrentClass();
+        
+        // Refresh class status every minute
+        setInterval(checkCurrentClass, 60000);
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', stopCamera);
+    </script>
+</body>
+</html>
